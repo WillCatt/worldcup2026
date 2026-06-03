@@ -1,0 +1,14 @@
+# data is auto-downloaded, not committed (groups.json IS committed)
+data/results.csv
+data/*.cache
+data/live/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# os
+.DS_Store

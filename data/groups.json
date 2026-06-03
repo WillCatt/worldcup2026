@@ -1,0 +1,25 @@
+{
+  "_comment": "2026 FIFA World Cup final draw (5 Dec 2025). 48 teams, 12 groups of 4. Team names match martj42/results.csv conventions where possible; see name_aliases in tournament.py for mapping.",
+  "tournament_dates": {"start": "2026-06-11", "end": "2026-07-19"},
+  "format": {
+    "groups": 12,
+    "teams_per_group": 4,
+    "advance": "top 2 of each group (24) + 8 best third-placed teams = 32",
+    "knockout": ["R32", "R16", "QF", "SF", "F"]
+  },
+  "groups": {
+    "A": ["Mexico", "South Africa", "South Korea", "Czech Republic"],
+    "B": ["Canada", "Bosnia and Herzegovina", "Qatar", "Switzerland"],
+    "C": ["Brazil", "Morocco", "Haiti", "Scotland"],
+    "D": ["United States", "Paraguay", "Australia", "Turkey"],
+    "E": ["Germany", "Curacao", "Ivory Coast", "Ecuador"],
+    "F": ["Netherlands", "Japan", "Sweden", "Tunisia"],
+    "G": ["Belgium", "Egypt", "Iran", "New Zealand"],
+    "H": ["Spain", "Cape Verde", "Saudi Arabia", "Uruguay"],
+    "I": ["France", "Senegal", "Iraq", "Norway"],
+    "J": ["Argentina", "Algeria", "Austria", "Jordan"],
+    "K": ["Portugal", "DR Congo", "Uzbekistan", "Colombia"],
+    "L": ["England", "Croatia", "Ghana", "Panama"]
+  },
+  "hosts": ["Mexico", "Canada", "United States"]
+}
