@@ -1,0 +1,21 @@
+{
+  "_comment": "Australian bookmaker composite outright-winner odds (decimal) for the 2026 World Cup. Team names mapped to ratings/results.csv conventions. Implied probabilities are de-vigged (proportional normalisation) in src/market.py.",
+  "source": "Australian bookmaker composite (Sportsbet / TAB / Ladbrokes AU range, via OddsJet AU)",
+  "captured": "2026-06-03",
+  "type": "outright_winner_decimal",
+  "odds": {
+    "Spain": 5.50, "France": 6.00, "England": 7.00, "Argentina": 9.00,
+    "Brazil": 9.00, "Portugal": 11.00, "Germany": 15.00, "Netherlands": 21.00,
+    "Norway": 26.00, "Belgium": 34.00, "Colombia": 34.00, "Morocco": 51.00,
+    "Japan": 67.00, "United States": 67.00, "Uruguay": 81.00, "Switzerland": 81.00,
+    "Mexico": 81.00, "Croatia": 81.00, "Turkey": 81.00, "Ecuador": 101.00,
+    "Senegal": 126.00, "Sweden": 126.00, "Canada": 151.00, "Austria": 151.00,
+    "Paraguay": 151.00, "Scotland": 251.00, "Bosnia and Herzegovina": 251.00,
+    "Ivory Coast": 301.00, "Egypt": 301.00, "Czech Republic": 301.00,
+    "Ghana": 401.00, "Algeria": 401.00, "South Korea": 501.00, "Tunisia": 501.00,
+    "Australia": 501.00, "Iran": 501.00, "DR Congo": 751.00, "South Africa": 1001.00,
+    "Saudi Arabia": 1001.00, "Panama": 1501.00, "New Zealand": 1501.00, "Iraq": 1501.00,
+    "Uzbekistan": 2001.00, "Qatar": 2001.00, "Cape Verde": 2001.00, "Jordan": 2501.00,
+    "Haiti": 3001.00, "Curaçao": 3501.00
+  }
+}
