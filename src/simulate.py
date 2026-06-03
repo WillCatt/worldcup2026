@@ -12,6 +12,7 @@ from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 from src import data, ratings, tournament
 
@@ -19,8 +20,13 @@ OUTPUT = Path(__file__).resolve().parent.parent / "output"
 ROUNDS = ["R32", "R16", "QF", "SF", "F", "W"]  # reached-at-least milestones
 
 
-def _sample_score(strengths: ratings.TeamStrengths, home: str, away: str, rng) -> tuple[int, int]:
-    """Draw a scoreline from the model (neutral venue)."""
+def _sample_score(strengths, home, away, rng, known=None) -> tuple[int, int]:
+    """Draw a scoreline from the model, or use the real result if this exact pairing
+    has already been played (known: {frozenset({a,b}): {team: goals}})."""
+    if known is not None:
+        rec = known.get(frozenset((home, away)))
+        if rec is not None:
+            return rec[home], rec[away]
     grid = strengths.score_matrix(home, away, neutral=True)
     flat = grid.ravel()
     k = rng.choice(flat.size, p=flat / flat.sum())
@@ -28,10 +34,10 @@ def _sample_score(strengths: ratings.TeamStrengths, home: str, away: str, rng) -
     return divmod(int(k), n)
 
 
-def _knockout_winner(strengths, home, away, rng) -> str:
+def _knockout_winner(strengths, home, away, rng, known=None) -> str:
     """Single match; if drawn, decide by a coin weighted to the stronger side
     (proxy for extra-time/penalties)."""
-    hg, ag = _sample_score(strengths, home, away, rng)
+    hg, ag = _sample_score(strengths, home, away, rng, known)
     if hg > ag:
         return home
     if ag > hg:
@@ -41,8 +47,8 @@ def _knockout_winner(strengths, home, away, rng) -> str:
     return home if rng.random() < edge else away
 
 
-def simulate_once(strengths, groups, rng) -> dict[str, str]:
-    """Return {team: furthest_round_reached}."""
+def simulate_once(strengths, groups, rng, known=None) -> dict[str, str]:
+    """Return {team: furthest_round_reached}. `known` fixes already-played results."""
     reached = {}
     standings = {}
     thirds = []  # (group, team, pts, gd, gf)
@@ -54,7 +60,7 @@ def simulate_once(strengths, groups, rng) -> dict[str, str]:
         for i in range(len(teams)):
             for j in range(i + 1, len(teams)):
                 a, b = teams[i], teams[j]
-                sa, sb = _sample_score(strengths, a, b, rng)
+                sa, sb = _sample_score(strengths, a, b, rng, known)
                 gf[a] += sa; ga[a] += sb; gf[b] += sb; ga[b] += sa
                 if sa > sb:
                     pts[a] += 3
@@ -86,7 +92,7 @@ def simulate_once(strengths, groups, rng) -> dict[str, str]:
         b = standings[sb[1]][0] if sb[0] == "W" else standings[sb[1]][1] if sb[0] == "R" else third_team_by_group[assign[m]]
         for t in (a, b):
             reached[t] = "R32"
-        winners[m] = _knockout_winner(strengths, a, b, rng)
+        winners[m] = _knockout_winner(strengths, a, b, rng, known)
 
     # Knockout flow.
     for m, (x, y) in tournament.KO.items():
@@ -94,12 +100,12 @@ def simulate_once(strengths, groups, rng) -> dict[str, str]:
         rnd = tournament.ROUND_OF[m]
         for t in (a, b):
             reached[t] = rnd
-        winners[m] = _knockout_winner(strengths, a, b, rng)
+        winners[m] = _knockout_winner(strengths, a, b, rng, known)
     reached[winners[104]] = "W"
     return reached
 
 
-def run(n: int = 50000, since: str = "2006-01-01", seed: int = 42) -> dict:
+def run(n: int = 50000, since: str = "2006-01-01", seed: int = 42, known: dict | None = None) -> dict:
     df = data.load()
     df = df[df.date >= since]
     strengths = ratings.fit(df)
@@ -116,7 +122,7 @@ def run(n: int = 50000, since: str = "2006-01-01", seed: int = 42) -> dict:
     counts = defaultdict(lambda: np.zeros(len(order), dtype=int))
 
     for _ in range(n):
-        for t, r in simulate_once(strengths, groups, rng).items():
+        for t, r in simulate_once(strengths, groups, rng, known).items():
             counts[t][rank[r]] += 1
 
     # Convert to "reached at least round X" probabilities.
@@ -135,8 +141,10 @@ def run(n: int = 50000, since: str = "2006-01-01", seed: int = 42) -> dict:
             "win": round(c[rank["W"]] / n, 4),
         }
     out = {
+        "generated_at": pd.Timestamp.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
         "n_sims": n,
         "fit_since": since,
+        "matches_played": 0 if not known else len(known),
         "teams": dict(sorted(table.items(), key=lambda kv: kv[1]["win"], reverse=True)),
     }
     OUTPUT.mkdir(exist_ok=True)
