@@ -68,6 +68,12 @@ def all_teams() -> list[str]:
     return [t for teams in load_groups().values() for t in teams]
 
 
+def load_hosts() -> frozenset[str]:
+    """Host nations (get home advantage in the sim), mapped to ratings conventions."""
+    raw = json.loads((DATA_DIR / "groups.json").read_text())["hosts"]
+    return frozenset(NAME_ALIASES.get(t, t) for t in raw)
+
+
 def assign_thirds(qualified_groups: list[str], rng) -> dict[int, str] | None:
     """Assign the groups whose thirds qualified to the 8 third-slots, respecting
     each slot's eligible-group set. Returns {match_no: group_letter} or None if no

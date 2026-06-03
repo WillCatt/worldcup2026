@@ -46,15 +46,25 @@ class TeamStrengths:
     rho: float
     teams: list[str]
 
-    def expected_goals(self, home: str, away: str, neutral: bool = True) -> tuple[float, float]:
-        ha = 0.0 if neutral else self.home_adv
-        mu_h = np.exp(self.attack[home] - self.defence[away] + ha)
-        mu_a = np.exp(self.attack[away] - self.defence[home])
+    def expected_goals(self, home: str, away: str, neutral: bool = True,
+                       hosts: frozenset[str] = frozenset()) -> tuple[float, float]:
+        """Expected goals for (home, away). Venue advantage applies either via the
+        classic home/away flag (`neutral=False` gives the home side the edge) or, for
+        neutral-site tournaments, to whichever side is a host nation playing at home."""
+        if hosts:
+            adv_h = self.home_adv if home in hosts else 0.0
+            adv_a = self.home_adv if away in hosts else 0.0
+        else:
+            adv_h = 0.0 if neutral else self.home_adv
+            adv_a = 0.0
+        mu_h = np.exp(self.attack[home] - self.defence[away] + adv_h)
+        mu_a = np.exp(self.attack[away] - self.defence[home] + adv_a)
         return float(mu_h), float(mu_a)
 
-    def score_matrix(self, home: str, away: str, neutral: bool = True) -> np.ndarray:
+    def score_matrix(self, home: str, away: str, neutral: bool = True,
+                     hosts: frozenset[str] = frozenset()) -> np.ndarray:
         """P(home goals = i, away goals = j) over the truncated grid."""
-        mu_h, mu_a = self.expected_goals(home, away, neutral)
+        mu_h, mu_a = self.expected_goals(home, away, neutral, hosts)
         i = np.arange(MAX_GOALS + 1)
         ph = np.exp(-mu_h) * mu_h**i / _FACT[: MAX_GOALS + 1]
         pa = np.exp(-mu_a) * mu_a**i / _FACT[: MAX_GOALS + 1]
@@ -65,9 +75,10 @@ class TeamStrengths:
                                     np.array(mu_h), np.array(mu_a), self.rho)
         return grid / grid.sum()
 
-    def outcome_probs(self, home: str, away: str, neutral: bool = True) -> dict[str, float]:
+    def outcome_probs(self, home: str, away: str, neutral: bool = True,
+                      hosts: frozenset[str] = frozenset()) -> dict[str, float]:
         """P(home win), P(draw), P(away win)."""
-        g = self.score_matrix(home, away, neutral)
+        g = self.score_matrix(home, away, neutral, hosts)
         return {
             "home": float(np.tril(g, -1).sum()),
             "draw": float(np.trace(g)),
