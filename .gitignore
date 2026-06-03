@@ -12,3 +12,6 @@ venv/
 
 # os
 .DS_Store
+
+# dev figure outputs (canonical copies live in site/assets/worldcup/)
+figures/*.png
