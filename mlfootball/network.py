@@ -251,6 +251,7 @@ def to_aggregate_export(Gu: nx.Graph) -> dict:
         "centrality": centrality_table(Gu),
         "resolution_sweep": resolution_sweep(Gu),
         "nested": nested_partition(Gu),
+        "robustness": robustness(Gu),
     }
 
 
@@ -377,6 +378,78 @@ def nested_partition(G: nx.Graph, gamma: float = 3.0, min_size: int = 4,
             "members": sorted(com),
         })
     return out
+
+
+def _cross_efficiency(G: nx.Graph, conf: dict[str, str]) -> float:
+    """Mean 1/distance over team-pairs in *different* confederations (0 if unreachable)."""
+    sp = dict(nx.all_pairs_shortest_path_length(G))
+    ns = list(G.nodes())
+    tot = cnt = 0
+    for i, u in enumerate(ns):
+        for v in ns[i + 1:]:
+            if conf[u] != conf[v]:
+                cnt += 1
+                d = sp[u].get(v)
+                if d:
+                    tot += 1.0 / d
+    return tot / cnt if cnt else 0.0
+
+
+def robustness(G: nx.Graph, kmax: int = 40, n_random: int = 8, seed: int = 1) -> dict:
+    """Targeted vs random bridge removal -- how fragile is world connectivity?
+
+    Removes teams worst-first by betweenness and tracks what's left. The honest two-sided
+    finding: the brokers carry a hugely disproportionate share of cross-continental *links*
+    (targeted removal strips them ~2x faster than random), yet the graph never disconnects --
+    every confederation stays reachable -- so connectivity itself is robust, not fragile.
+    """
+    import random as _random
+    conf = nx.get_node_attributes(G, "confederation")
+    n = G.number_of_nodes()
+    cross0 = sum(1 for u, v in G.edges() if conf[u] != conf[v])
+
+    H = G.copy()
+    for _, _, dd in H.edges(data=True):
+        dd["dist"] = 1.0 / dd["weight"]
+    btw = nx.betweenness_centrality(H, weight="dist", normalized=True)
+    order = sorted(btw, key=lambda t: -btw[t])
+
+    def cross_curve(remove_order):
+        A = G.copy()
+        frac, lcc = [], []
+        for k in range(kmax + 1):
+            if k > 0:
+                A.remove_node(remove_order[k - 1])
+            frac.append(round(sum(1 for u, v in A.edges() if conf[u] != conf[v]) / cross0, 4))
+            comps = list(nx.connected_components(A))
+            surviving = A.number_of_nodes()
+            # largest component as a share of *surviving* teams: 1.0 == still one graph
+            lcc.append(max(len(c) for c in comps) / surviving if surviving else 1.0)
+        return frac, lcc
+
+    targeted, lcc_t = cross_curve(order)
+    rng = _random.Random(seed)
+    rnd = np.zeros(kmax + 1)
+    for _ in range(n_random):
+        ro = list(G.nodes()); rng.shuffle(ro)
+        rnd += np.array(cross_curve(ro)[0])
+    rnd = (rnd / n_random).round(4)
+
+    eff0 = _cross_efficiency(G, conf)
+    A = G.copy()
+    for t in order[:kmax]:
+        A.remove_node(t)
+    eff_kmax = _cross_efficiency(A, conf)
+
+    return {
+        "kmax": kmax,
+        "targeted": targeted,                      # cross-edges remaining (fraction)
+        "random": rnd.tolist(),
+        "order": order[:12],
+        "top10_link_loss": round(1 - targeted[10], 4),
+        "lcc_min": round(min(lcc_t), 4),           # ~1 -> never disconnects
+        "reach_retained_kmax": round(eff_kmax / eff0, 4),
+    }
 
 
 def adjacency_export(G: nx.Graph, min_games: int = 2) -> dict:

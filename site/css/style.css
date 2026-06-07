@@ -66,6 +66,8 @@ svg { display: block; width: 100%; }
 #smallworld { height: 110px; }
 #centrality { height: 460px; }
 #sunburst { height: 560px; }
+#robustness { height: 360px; }
+.series-label { font-size: 12px; font-weight: 600; font-family: "JetBrains Mono", monospace; }
 
 /* ── part dividers ────────────────────────────────── */
 .part { margin: 24px 0 26px; padding-bottom: 12px; border-bottom: 2px solid var(--ink); display: flex; align-items: baseline; gap: 14px; }

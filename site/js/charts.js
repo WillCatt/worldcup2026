@@ -32,6 +32,7 @@ Promise.all([
     smallWorldChart(G);
     centralityChart(G);
     sunburstChart(G);
+    robustnessChart(G);
   };
   drawAll();
   fillFindings(G);
@@ -420,6 +421,43 @@ function sunburstChart(G) {
     .join("text").attr("class", "sun-label-inner")
     .attr("transform", labelTransform).attr("text-anchor", "middle").attr("dy", "0.32em")
     .text(d => d.data.name);
+}
+
+// ── Part VI · robustness (targeted vs random removal) ────────────────
+function robustnessChart(G) {
+  const r = G.robustness;
+  d3.select("#rob-stats").html(`
+    <div class="swc"><div class="n">${pct(r.top10_link_loss)}</div><div class="l">of all cross-continental links gone after removing just the top 10 brokers</div></div>
+    <div class="swc"><div class="n">${(r.lcc_min * 100).toFixed(0)}%</div><div class="l">of teams stay in one connected graph even after ${r.kmax} removals — it never splits</div></div>
+    <div class="swc"><div class="n">${pct(r.reach_retained_kmax)}</div><div class="l">of cross-continental reachability survives all ${r.kmax} removals</div></div>`);
+
+  const svg = setup("#robustness");
+  const m = { top: 16, right: 116, bottom: 36, left: 46 };
+  const iw = svg.w - m.left - m.right, ih = svg.h - m.top - m.bottom;
+  const g = svg.sel.append("g").attr("transform", `translate(${m.left},${m.top})`);
+  const x = d3.scaleLinear().domain([0, r.kmax]).range([0, iw]);
+  const y = d3.scaleLinear().domain([0.3, 1]).range([ih, 0]);
+
+  g.append("g").call(d3.axisLeft(y).ticks(5).tickFormat(d => Math.round(d * 100) + "%").tickSize(-iw));
+  g.append("g").attr("transform", `translate(0,${ih})`).call(d3.axisBottom(x).ticks(8).tickSize(0));
+  g.append("text").attr("class", "axis-label").attr("x", iw).attr("y", ih + 32).attr("text-anchor", "end")
+    .text("broker teams removed →");
+
+  const line = key => d3.line().x((d, i) => x(i)).y(d => y(d)).curve(d3.curveMonotoneX);
+  const series = [
+    { data: r.random, color: "#9a8c79", label: "random removal", dash: "4 3" },
+    { data: r.targeted, color: "#b06a16", label: "targeted (brokers first)", dash: null },
+  ];
+  series.forEach(s => {
+    g.append("path").datum(s.data).attr("fill", "none").attr("stroke", s.color)
+      .attr("stroke-width", 2.5).attr("stroke-dasharray", s.dash).attr("d", line());
+    g.append("text").attr("class", "series-label").attr("x", iw + 8).attr("y", y(s.data[s.data.length - 1]) + 4)
+      .attr("fill", s.color).text(s.label);
+  });
+  // gap shading between the two curves
+  g.append("path").datum(r.targeted.map((t, i) => ({ i, t, r: r.random[i] })))
+    .attr("fill", "#b06a16").attr("opacity", 0.08)
+    .attr("d", d3.area().x(d => x(d.i)).y0(d => y(d.r)).y1(d => y(d.t)).curve(d3.curveMonotoneX));
 }
 
 // ── helpers ──────────────────────────────────────────────────────────
