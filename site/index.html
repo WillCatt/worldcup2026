@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The International Football Network · ML in Football</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <p class="eyebrow">Machine Learning in Football · 01</p>
+      <h1>The international football network</h1>
+      <p class="lede">Treat every nation as a node and every match as an edge. The
+        <em>shape</em> of 150 years of results explains why ranking national teams — and
+        seeding a 48-team World Cup — is genuinely hard: the world barely plays itself.</p>
+    </header>
+
+    <section class="stats" id="stats"><!-- filled from network.json --></section>
+
+    <section class="graph-block">
+      <div class="graph-head">
+        <h2>The match graph</h2>
+        <div class="controls">
+          <div class="seg" id="colour-by" role="group" aria-label="Colour nodes by">
+            <button data-mode="conf" class="active">Confederation</button>
+            <button data-mode="community">Detected community</button>
+          </div>
+          <label class="check"><input type="checkbox" id="cross-only" /> Cross-continental links only</label>
+          <button id="bridges-btn" class="ghost">Spotlight bridge teams</button>
+        </div>
+      </div>
+      <div class="graph-wrap">
+        <svg id="graph" aria-label="Force-directed graph of international football"></svg>
+        <div class="legend" id="legend"></div>
+        <div class="tooltip" id="tooltip" hidden></div>
+        <p class="hint">Drag a nation to pull its bloc apart · hover for detail · node size = PageRank</p>
+      </div>
+    </section>
+
+    <section class="findings">
+      <article>
+        <h3>1 · Teams almost never leave home</h3>
+        <p><strong id="f-within">86%</strong> of games are played <em>within</em> a team's own
+          confederation. Only about one match in seven crosses continents — so the evidence
+          linking, say, an Asian side to a South American one is desperately thin.</p>
+      </article>
+      <article>
+        <h3>2 · The continents draw themselves</h3>
+        <p>An algorithm knowing nothing of geography recovers the confederations from match
+          patterns alone (NMI <strong id="f-nmi">0.96</strong>) — but finds <strong>five blocs,
+          not six</strong>: CONMEBOL and CONCACAF fuse into one <em>Americas</em> super-bloc,
+          they play each other so much.</p>
+      </article>
+      <article>
+        <h3>3 · A ranking held up by a few bridges</h3>
+        <p>PageRank on the beat-graph gives a power ranking for free. The whole global ordering
+          leans on a handful of <em>bridge</em> teams — <span id="f-bridges"></span> — who
+          actually venture across continents.</p>
+      </article>
+    </section>
+
+    <footer>
+      <p>Built from the <code>martj42</code> international-results history ·
+        analysis in <code>notebooks/01_network.py</code> · graph force-directed in D3.</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script src="js/network.js"></script>
+</body>
+</html>

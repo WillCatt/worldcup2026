@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+mlfootball/__init__.py
+mlfootball/data.py
+mlfootball/network.py
+mlfootball.egg-info/PKG-INFO
+mlfootball.egg-info/SOURCES.txt
+mlfootball.egg-info/dependency_links.txt
+mlfootball.egg-info/requires.txt
+mlfootball.egg-info/top_level.txt

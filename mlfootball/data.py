@@ -1,11 +1,10 @@
-"""Download and load the international-results history.
+"""Load the international-results history.
 
 Source: martj42/international_results on GitHub (no auth, raw CSV).
 Columns: date, home_team, away_team, home_score, away_score, tournament, city, country, neutral
 """
 from __future__ import annotations
 
-import io
 from pathlib import Path
 
 import pandas as pd
@@ -28,7 +27,7 @@ def download(force: bool = False) -> Path:
 
 
 def load(force_download: bool = False) -> pd.DataFrame:
-    """Return the results history as a typed, sorted DataFrame."""
+    """Return the results history as a typed, date-sorted DataFrame (played games only)."""
     if force_download or not RESULTS_CSV.exists():
         download(force=force_download)
     df = pd.read_csv(RESULTS_CSV, parse_dates=["date"])
@@ -37,10 +36,3 @@ def load(force_download: bool = False) -> pd.DataFrame:
     df["away_score"] = df["away_score"].astype(int)
     df["neutral"] = df["neutral"].astype(bool)
     return df.sort_values("date").reset_index(drop=True)
-
-
-if __name__ == "__main__":
-    df = load(force_download=True)
-    print(f"Downloaded {len(df):,} matches, {df.date.min().date()} → {df.date.max().date()}")
-    print(f"Unique teams: {pd.concat([df.home_team, df.away_team]).nunique():,}")
-    print(df.tail(3).to_string(index=False))

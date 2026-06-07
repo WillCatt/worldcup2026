@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mlfootball"
+version = "0.1.0"
+description = "Machine Learning in Football — analyses behind the World Cup 2026 piece"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas",
+    "numpy",
+    "scipy",
+    "networkx",
+    "matplotlib",
+    "requests",
+]
+
+[project.optional-dependencies]
+notebooks = ["jupyterlab", "jupytext", "nbconvert", "ipykernel"]
+
+[tool.setuptools]
+packages = ["mlfootball"]
+
+[tool.jupytext]
+formats = "notebooks//ipynb,notebooks//py:percent"

@@ -1,0 +1,16 @@
+Metadata-Version: 2.4
+Name: mlfootball
+Version: 0.1.0
+Summary: Machine Learning in Football — analyses behind the World Cup 2026 piece
+Requires-Python: >=3.11
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: scipy
+Requires-Dist: networkx
+Requires-Dist: matplotlib
+Requires-Dist: requests
+Provides-Extra: notebooks
+Requires-Dist: jupyterlab; extra == "notebooks"
+Requires-Dist: jupytext; extra == "notebooks"
+Requires-Dist: nbconvert; extra == "notebooks"
+Requires-Dist: ipykernel; extra == "notebooks"
