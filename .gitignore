@@ -15,3 +15,6 @@ venv/
 
 # dev figure outputs (canonical copies live in site/assets/worldcup/)
 figures/*.png
+
+# build artifacts
+*.egg-info/

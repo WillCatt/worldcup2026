@@ -1,42 +1,43 @@
 # %% [markdown]
-# # 01 · The international football network
+# # 01 · The shape of the football world
 #
-# A different lens on 150 years of results: treat every nation as a **node** and every
-# match as an **edge**, and ask what the *shape* of that graph says about how hard it is
-# to rank national teams.
+# Treat every nation as a **node** and every match as an **edge**, and read 150 years of
+# results as a single graph. This notebook is the analysis behind the interactive page; it
+# quantifies five things and exports a small (~11 KB) confederation-level payload the D3
+# charts render.
 #
 # **Thesis.** National teams overwhelmingly play *within* their own confederation, so the
 # match graph is clustered by continent with only thin "bridge" games linking the blocs.
 # That sparse cross-continental connectivity is *why* ranking across confederations — and
 # seeding a 48-team World Cup — is genuinely hard.
 #
-# This notebook builds the graph, quantifies the structure, and exports
-# `site/data/network.json` for the interactive D3 page. It's the analysis; the page is the
-# showroom.
+# The five lenses: **(I)** the bloc structure, **(II)** how it has changed over time,
+# **(III)** how small-world the graph is, **(IV)** who structurally holds it together, and
+# **(V)** the nested sub-regions hiding inside the confederations.
 
 # %%
 import json
+from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
-from mlfootball import data, network as net
+from mlfootball import data, network as net, temporal
 
 pd.set_option("display.max_rows", 20)
 
 df = data.load()
+conf = net.load_confederations()
 print(f"{len(df):,} internationals, {df.date.min().date()} → {df.date.max().date()}")
 
-# %%
-# Build both graphs: undirected "who-plays-whom" (structure) and directed "beat-graph"
-# (ranking). Restricted to the modern era with an iterative min-matches filter.
+# The undirected "who-plays-whom" graph: modern window + iterative min-matches filter.
 Gu = net.build_undirected(df)
-Gd = net.build_directed(df)
 print(f"Graph: {Gu.number_of_nodes()} teams, {Gu.number_of_edges()} edges")
 
 # %% [markdown]
-# ## Finding 1 — national teams almost never leave home
+# ## Part I — Six blocs, barely touching
 #
-# The single most important number: what share of games stay *within* a confederation?
+# What share of games stay *within* a confederation, and how inward-looking is each bloc?
 
 # %%
 rep = net.connectivity_report(Gu)
@@ -45,64 +46,108 @@ print(f"CROSS-confederation:  {rep['cross_share']:.1%}\n")
 pd.Series(rep["insularity"], name="insularity").sort_values(ascending=False).map("{:.1%}".format)
 
 # %% [markdown]
-# ~86% of games never cross a continent. Big self-sufficient blocs (CAF, UEFA) barely look
-# outward; CONMEBOL — just ten teams — is forced to. This is the structural reason the
-# forecast is least certain about cross-continental match-ups: the evidence linking them is thin.
+# ~86% of games never cross a continent. The 6×6 flow matrix makes the whole picture exact —
+# the diagonal (games kept at home) dominates every row, and the one fat off-diagonal cell is
+# CONMEBOL↔CONCACAF.
+
+# %%
+M = net.flow_matrix(Gu)
+share = M / M.sum(axis=1, keepdims=True)
+pd.DataFrame((share * 100).round(1), index=net.CONF_ORDER, columns=net.CONF_ORDER)
 
 # %% [markdown]
-# ## Finding 2 — the continents draw themselves
-#
-# Can an algorithm that knows nothing about geography recover the confederations from match
-# patterns alone? Run Louvain community detection and compare to the real partition.
+# Run Louvain community detection (it knows nothing of geography) and it recovers the
+# confederations almost perfectly — **but five blocs, not six**: CONMEBOL and CONCACAF fuse
+# into a single "Americas" community.
 
 # %%
 com = net.communities(Gu)
-print(f"Louvain communities: {com['n_communities']}  (vs 6 real confederations)")
-print(f"NMI vs confederations: {com['nmi']:.3f}")
-print(f"Modularity — confed {com['modularity_confed']:.3f} · Louvain {com['modularity_louvain']:.3f}")
-
-# Which confederations landed in each detected community?
-from collections import Counter
-conf = {n: Gu.nodes[n]["confederation"] for n in Gu}
-comm_of = com["node_comm"]
-mix = {}
-for n, c in comm_of.items():
-    mix.setdefault(c, Counter())[conf[n]] += 1
-for c, cnt in sorted(mix.items()):
-    print(f"  community {c}: " + ", ".join(f"{k}:{v}" for k, v in cnt.most_common()))
+print(f"Louvain communities: {com['n_communities']}  (vs 6 real)   NMI: {com['nmi']:.3f}")
 
 # %% [markdown]
-# Almost perfect (NMI 0.96) — but **five blocs, not six**: CONMEBOL and CONCACAF fuse into a
-# single "Americas" community. The ten South American sides play North/Central America so often
-# (qualifiers, Copa América) that the graph can't separate them.
-
-# %% [markdown]
-# ## Finding 3 — a ranking for free, and where it's shaky
-
-# %%
-pr = net.pagerank_ranking(Gd)
-pr.head(15)
-
-# %% [markdown]
-# The graph hands you a power ranking via PageRank on the beat-graph. The teams it's *least*
-# sure about are the poorly-connected ones — exactly the teams the global match graph barely
-# reaches. Those are the bridge teams that hold the whole ranking together:
-
-# %%
-print("Bridge teams (most cross-confederational, well-connected):")
-print(", ".join(net.bridge_teams(Gu)))
-
-# %% [markdown]
-# ## Export for the D3 page
+# ## Part II — Is the world coming together?
 #
-# Ship nodes + links + metrics; the page force-directs the layout in-browser so it stays
-# interactive (drag, hover, filter) rather than a baked image.
+# Of all internationals played each year, what share crossed continents? The answer is a
+# rise *and* a retreat.
 
 # %%
-export = net.to_graph_export(Gu, Gd)
-out_path = net.DATA_DIR.parent / "site" / "data" / "network.json"
-out_path.parent.mkdir(parents=True, exist_ok=True)
-out_path.write_text(json.dumps(export, separators=(",", ":")))
-print(f"Wrote {out_path.relative_to(net.DATA_DIR.parent)}  "
-      f"({len(export['nodes'])} nodes, {len(export['links'])} links, "
-      f"{out_path.stat().st_size/1024:.0f} KB)")
+tser = temporal.cross_share_over_time(df, conf=conf)
+dec = pd.DataFrame(tser["decades"])
+dec["cross"] = (dec["cross"] * 100).round(1)
+print(dec.to_string(index=False))
+print(f"\nPeak: {tser['peak']['decade']}s at {tser['peak']['cross']:.0%}  →  "
+      f"latest: {tser['latest']['decade']}s at {tser['latest']['cross']:.0%}")
+
+# %% [markdown]
+# Intercontinental play climbed for a century to an **18% peak in the 1990s**, then fell back
+# to ~12% — as confederations built out their own packed calendars (continental Nations
+# Leagues, more regional qualifiers), friendlies abroad got crowded out.
+
+# %% [markdown]
+# ## Part III — Two degrees of football
+#
+# For all the silos, is the graph a *small world* — short paths, tight clustering?
+
+# %%
+sw = net.smallworld_stats(Gu)
+print(f"avg shortest path: {sw['avg_path']}   diameter: {sw['diameter']}")
+print(f"clustering: {sw['clustering']}  (random graph of same size: {sw['rand_clustering']})")
+print("path-length distribution:",
+      {d["hops"]: f"{d['share']:.0%}" for d in sw["distribution"]})
+print("example chain · Vanuatu → San Marino:", net.shortest_chain(Gu, "Vanuatu", "San Marino"))
+
+# %% [markdown]
+# Any two national teams are on average **1.9 matches** apart and at most **4**; ~88% of all
+# pairs are within two. High clustering (0.60 vs 0.23 random) with short paths is the textbook
+# small-world signature.
+
+# %% [markdown]
+# ## Part IV — Who really holds it together?
+#
+# Cross-share asks who *travels* most. **Betweenness** asks who sits on the most shortest
+# paths between blocs — the brokers the world routes through. They are not the same teams.
+
+# %%
+cen = net.centrality_table(Gu)
+print("Top betweenness (true structural brokers):")
+for r in cen["betweenness"][:8]:
+    print(f"  {r['team']:18s} btw={r['score']:.3f}  plays-abroad={r['cross']:.0%}  ({r['conf']})")
+print(f"\nSpearman(betweenness, cross-share) = {cen['spearman_btw_cross']:.2f}  → they only partly agree")
+print("Eigenvector core (densely embedded):", ", ".join(r["team"] for r in cen["eigenvector"][:6]))
+
+# %% [markdown]
+# Mexico brokers *and* travels, but Qatar, Ghana and the Central American sides are
+# high-leverage brokers despite modest travel. And the densely-connected **core** of world
+# football, by eigenvector centrality, is the **Americas** — not Europe — because intra-
+# American play is so dense.
+
+# %% [markdown]
+# ## Part V — Structure at every scale
+#
+# Turn up the community-detection resolution and the six confederations fracture into
+# recognizable sub-regions — the world is structured all the way down.
+
+# %%
+print("resolution sweep (γ → communities):",
+      {r["gamma"]: r["n_communities"] for r in net.resolution_sweep(Gu)})
+print("\nfine-grained sub-regions (γ=3.0):")
+for s in net.nested_partition(Gu):
+    print(f"  {s['label']:28s} ({s['size']:2d}, mostly {s['conf']})")
+
+# %% [markdown]
+# ## Export for the interactive page
+#
+# One small `network.json` (structure + temporal + small-world + centrality + nested) plus a
+# compact `graph_adjacency.json` the in-browser "connect any two nations" widget BFS-walks.
+
+# %%
+export = net.to_aggregate_export(Gu)
+export["temporal"] = tser
+
+site = net.DATA_DIR.parent / "site" / "data"
+site.mkdir(parents=True, exist_ok=True)
+(site / "network.json").write_text(json.dumps(export, separators=(",", ":")))
+(site / "graph_adjacency.json").write_text(json.dumps(net.adjacency_export(Gu), separators=(",", ":")))
+
+print(f"network.json       {(site / 'network.json').stat().st_size/1024:.1f} KB")
+print(f"graph_adjacency.json {(site / 'graph_adjacency.json').stat().st_size/1024:.1f} KB")

@@ -176,46 +176,217 @@ def bridge_teams(G: nx.Graph, top_n: int = 10, min_games: int = 40) -> list[str]
     return ranked[:top_n]
 
 
-def to_graph_export(Gu: nx.Graph, Gd: nx.DiGraph, edge_min_games: int = 2) -> dict:
-    """Assemble the nodes/links/metrics payload the D3 page force-directs in-browser.
+def flow_matrix(G: nx.Graph, order: list[str] = CONF_ORDER) -> np.ndarray:
+    """Symmetric confederation x confederation match-flow matrix (endpoint-incidence).
 
-    edge_min_games trims one-off meetings so the browser graph stays legible.
+    M[i][j] = recency-weighted volume of games whose two endpoints sit in confederations
+    i and j. Within-confederation games (both endpoints in i) land on the diagonal counted
+    *twice* (once per endpoint), so each row sums to that confederation's total match
+    incidence and M[i][i] / rowsum reproduces ``connectivity_report`` insularity exactly --
+    one consistent definition feeds the chord ribbons, the heatmap, and the insularity bars.
     """
-    pr = nx.pagerank(Gd, weight="weight")
-    comm = communities(Gu)["node_comm"]
-    cs = cross_share(Gu)
-    conf = nx.get_node_attributes(Gu, "confederation")
+    idx = {c: i for i, c in enumerate(order)}
+    conf = nx.get_node_attributes(G, "confederation")
+    M = np.zeros((len(order), len(order)))
+    for u, v, wt in G.edges(data="weight"):
+        cu, cv = conf[u], conf[v]
+        if cu not in idx or cv not in idx:
+            continue
+        i, j = idx[cu], idx[cv]
+        if i == j:
+            M[i, i] += 2 * wt           # both endpoints home -> diagonal, counted twice
+        else:
+            M[i, j] += wt
+            M[j, i] += wt
+    return M
+
+
+def to_aggregate_export(Gu: nx.Graph) -> dict:
+    """Small confederation-level payload for the redesigned charts.
+
+    Ships ~6x6 numbers, not 217 nodes: the flow matrix (chord + heatmap), per-confederation
+    insularity (bars), the bridge teams with their cross-share (bars), and the headline
+    structure/community metrics. A few KB instead of ~290 KB -- legible by construction.
+    """
     rep = connectivity_report(Gu)
+    com = communities(Gu)
+    conf = nx.get_node_attributes(Gu, "confederation")
+    cs = cross_share(Gu)
+    M = flow_matrix(Gu)
 
-    nodes = [{
-        "id": n,
-        "conf": conf[n],
-        "pagerank": round(pr.get(n, 0.0), 6),
-        "community": comm[n],
-        "cross": round(cs[n], 3),
-        "degree": Gu.degree(n),
-    } for n in Gu.nodes()]
+    # Which detected community each confederation predominantly falls into (the Americas merge).
+    from collections import Counter
+    comm_of = com["node_comm"]
+    conf_community: dict[str, int] = {}
+    for c in CONF_ORDER:
+        members = [comm_of[n] for n in Gu if conf[n] == c]
+        if members:
+            conf_community[c] = Counter(members).most_common(1)[0][0]
 
-    links = [{
-        "source": u, "target": v,
-        "weight": round(Gu[u][v]["weight"], 3),
-        "cross": conf[u] != conf[v],
-    } for u, v in Gu.edges() if Gu[u][v]["games"] >= edge_min_games]
+    deg_games = {n: sum(Gu[n][m]["games"] for m in Gu[n]) for n in Gu}
+    bridges = [{
+        "team": t,
+        "conf": conf[t],
+        "cross": round(cs[t], 3),
+        "games": deg_games[t],
+    } for t in bridge_teams(Gu)]
 
     return {
-        "nodes": sorted(nodes, key=lambda d: -d["pagerank"]),
-        "links": links,
         "conf_order": CONF_ORDER,
+        "matrix": [[round(x, 2) for x in row] for row in M.tolist()],
+        "insularity": {k: round(v, 4) for k, v in rep["insularity"].items()},
+        "bridges": bridges,
+        "conf_community": conf_community,
         "metrics": {
             "within_share": round(rep["within_share"], 4),
             "cross_share": round(rep["cross_share"], 4),
-            "insularity": {k: round(v, 4) for k, v in rep["insularity"].items()},
             "n_teams": rep["n_teams"],
             "n_edges": rep["n_edges"],
-            **{k: communities(Gu)[k] for k in
-               ("n_communities", "nmi", "modularity_confed", "modularity_louvain")},
-            "bridges": bridge_teams(Gu),
+            "n_communities": com["n_communities"],
+            "nmi": round(com["nmi"], 4),
+            "modularity_confed": round(com["modularity_confed"], 4),
+            "modularity_louvain": round(com["modularity_louvain"], 4),
         },
+        "smallworld": smallworld_stats(Gu),
+        "centrality": centrality_table(Gu),
+        "resolution_sweep": resolution_sweep(Gu),
+        "nested": nested_partition(Gu),
+    }
+
+
+def smallworld_stats(G: nx.Graph) -> dict:
+    """Is the match graph a 'small world'? Path lengths + clustering vs a random baseline.
+
+    Works on the largest connected component. The headline: any two national teams are a
+    handful of matches apart (short paths) yet teams cluster tightly (high clustering) --
+    the signature of a small-world network.
+    """
+    H = G.subgraph(max(nx.connected_components(G), key=len)).copy()
+    n, m = H.number_of_nodes(), H.number_of_edges()
+    avg_path = nx.average_shortest_path_length(H)
+    diameter = nx.diameter(H)
+    clustering = nx.average_clustering(H)
+    p = 2 * m / (n * (n - 1))                       # Erdos-Renyi baseline density
+
+    dist: dict[int, int] = {}
+    for _, lengths in nx.all_pairs_shortest_path_length(H):
+        for t, ln in lengths.items():
+            if ln > 0:
+                dist[ln] = dist.get(ln, 0) + 1
+    total = sum(dist.values())
+    distribution = [{"hops": k, "share": round(v / total, 4)}
+                    for k, v in sorted(dist.items())]
+    return {
+        "n": n, "m": m,
+        "avg_path": round(avg_path, 3),
+        "diameter": diameter,
+        "clustering": round(clustering, 3),
+        "rand_avg_path": round(np.log(n) / np.log(n * p), 3),
+        "rand_clustering": round(p, 3),
+        "distribution": distribution,
+    }
+
+
+def shortest_chain(G: nx.Graph, a: str, b: str) -> list[str]:
+    """The shortest chain of matches linking two nations (unweighted hops)."""
+    return nx.shortest_path(G, a, b)
+
+
+def centrality_table(G: nx.Graph, top_n: int = 12) -> dict:
+    """Betweenness + eigenvector centrality -- who *structurally* holds the world together.
+
+    Betweenness (with strong ties = short distances) finds the teams sitting on the most
+    shortest paths between blocs: the true brokers, which are *not* the same as the teams
+    that simply travel most (cross-share). Eigenvector finds the densely-embedded core.
+    """
+    H = G.copy()
+    for _, _, dd in H.edges(data=True):
+        dd["dist"] = 1.0 / dd["weight"]
+    btw = nx.betweenness_centrality(H, weight="dist", normalized=True)
+    eig = nx.eigenvector_centrality(H, weight="weight", max_iter=1000)
+    cs = cross_share(G)
+    conf = nx.get_node_attributes(G, "confederation")
+
+    def rows(score):
+        return [{"team": t, "conf": conf[t], "score": round(score[t], 4),
+                 "cross": round(cs[t], 3)}
+                for t in sorted(score, key=lambda n: -score[n])[:top_n]]
+
+    btw_rank = {t: i for i, t in enumerate(sorted(btw, key=lambda n: -btw[n]))}
+    cs_rank = {t: i for i, t in enumerate(sorted(cs, key=lambda n: -cs[n]))}
+    common = list(btw)
+    rho = float(np.corrcoef(
+        [btw_rank[t] for t in common], [cs_rank[t] for t in common])[0, 1])
+    return {
+        "betweenness": rows(btw),
+        "eigenvector": rows(eig),
+        "spearman_btw_cross": round(rho, 3),
+    }
+
+
+def resolution_sweep(G: nx.Graph, gammas=(0.3, 0.5, 0.7, 1.0, 1.5, 2.0, 3.0, 5.0),
+                     seed: int = 42) -> list[dict]:
+    """How many communities at each resolution -- the world is structured at every scale."""
+    out = []
+    for g in gammas:
+        c = nx.community.louvain_communities(G, weight="weight", resolution=g, seed=seed)
+        out.append({"gamma": g, "n_communities": len(c)})
+    return out
+
+
+# Signature members that name a fine-grained sub-community when present.
+_SUBREGION_SIGNATURES = [
+    ("Western Europe", {"England", "Germany", "Spain", "France", "Italy"}),
+    ("Eastern Europe", {"Croatia", "Serbia", "Bulgaria", "Czech Republic"}),
+    ("Nordics & Central Europe", {"Sweden", "Norway", "Denmark"}),
+    ("South America", {"Argentina", "Brazil", "Uruguay"}),
+    ("North & Central America", {"Mexico", "United States", "Costa Rica"}),
+    ("The Caribbean", {"Jamaica", "Barbados", "Bahamas"}),
+    ("Asian powers & the Gulf", {"Japan", "Iran", "Australia", "Saudi Arabia"}),
+    ("South & Southeast Asia", {"India", "Nepal", "Bangladesh"}),
+    ("West & Central Africa", {"Nigeria", "Ghana", "Senegal"}),
+    ("Southern & East Africa", {"South Africa", "Zambia", "Zimbabwe"}),
+    ("Oceania", {"Fiji", "Vanuatu", "New Zealand"}),
+]
+
+
+def _label_subregion(members: set[str], dominant_conf: str) -> str:
+    best, best_hits = None, 0
+    for name, sig in _SUBREGION_SIGNATURES:
+        hits = len(sig & members)
+        if hits > best_hits:
+            best, best_hits = name, hits
+    return best if best_hits >= 2 else f"{dominant_conf} group"
+
+
+def nested_partition(G: nx.Graph, gamma: float = 3.0, min_size: int = 4,
+                     seed: int = 42) -> list[dict]:
+    """Fine-grained sub-communities (confederation -> region), each given a readable name."""
+    from collections import Counter
+    comms = nx.community.louvain_communities(G, weight="weight", resolution=gamma, seed=seed)
+    conf = nx.get_node_attributes(G, "confederation")
+    out = []
+    for com in sorted(comms, key=len, reverse=True):
+        if len(com) < min_size:
+            continue
+        dom = Counter(conf[n] for n in com).most_common(1)[0][0]
+        out.append({
+            "label": _label_subregion(set(com), dom),
+            "conf": dom,
+            "size": len(com),
+            "members": sorted(com),
+        })
+    return out
+
+
+def adjacency_export(G: nx.Graph, min_games: int = 2) -> dict:
+    """Compact adjacency for the in-browser 'connect any two nations' BFS widget."""
+    conf = nx.get_node_attributes(G, "confederation")
+    adj = {n: sorted(m for m in G[n] if G[n][m]["games"] >= min_games) for n in G}
+    adj = {n: nbrs for n, nbrs in adj.items() if nbrs}
+    return {
+        "conf": {n: conf[n] for n in adj},
+        "adjacency": adj,
     }
 
 
