@@ -20,8 +20,8 @@ const hideTip = () => tip.style("opacity", 0);
 const pct = x => Math.round(x * 100) + "%";
 
 Promise.all([
-  d3.json("data/network.json"),
-  d3.json("data/graph_adjacency.json"),
+  d3.json("../data/network.json"),
+  d3.json("../data/graph_adjacency.json"),
 ]).then(([G, A]) => {
   const drawAll = () => {
     fillStats(G);

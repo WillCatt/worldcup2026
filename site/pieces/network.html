@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The International Football Network · ML in Football</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <main>
+    <a class="back-link" href="../index.html">← All explorations</a>
+    <header class="hero">
+      <p class="eyebrow">Machine Learning in Football · 01</p>
+      <h1>The shape of the football world</h1>
+      <p class="lede">Treat every nation as a node and every match as an edge, then read
+        150&nbsp;years of results as a single graph. Its structure explains why ranking national
+        teams — and seeding a 48-team World Cup — is genuinely hard: <em>the world barely plays
+        itself</em>, it has only grudgingly come together, and it hangs on a handful of teams.</p>
+    </header>
+
+    <section class="stats" id="stats"><!-- filled from network.json --></section>
+
+    <!-- ════════ PART I · THE SHAPE ════════ -->
+    <div class="part"><span class="part-no">Part I</span><h2 class="part-title">Six blocs, barely touching</h2></div>
+
+    <section class="block">
+      <div class="block-head">
+        <h3>How the six blocs connect</h3>
+        <p class="sub">Each arc is a confederation, sized by how much it plays <em>outside</em>
+          itself. Ribbons are cross-continental match flow — the only games that link the
+          world. Hover an arc to isolate its links.</p>
+      </div>
+      <div class="chart-wrap">
+        <svg id="chord" aria-label="Chord diagram of cross-confederation match flow"></svg>
+        <p class="caption" id="chord-cap">One ribbon dwarfs the rest: <strong>CONMEBOL↔CONCACAF</strong>.
+          South and North/Central America play each other so much they barely read as separate.</p>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="block-head">
+        <h3>Where every game goes</h3>
+        <p class="sub">The same data, exact. Each row is a confederation; cells show the share
+          of <em>its</em> games played against each bloc. The diagonal — games kept at home —
+          dominates every row.</p>
+      </div>
+      <div class="chart-wrap">
+        <svg id="matrix" aria-label="Confederation-by-confederation flow matrix"></svg>
+        <p class="caption">Read along a row: the bright diagonal is insularity. The only warm
+          off-diagonal cell is <strong>CONMEBOL → CONCACAF</strong> — the Americas link again.</p>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="block-head">
+        <h3>How inward-looking each confederation is</h3>
+        <p class="sub">Share of games a bloc plays within its own ranks. Big self-sufficient
+          confederations almost never look outward.</p>
+      </div>
+      <div class="chart-wrap narrow">
+        <svg id="insularity" aria-label="Insularity by confederation"></svg>
+        <p class="caption"><strong>CONMEBOL</strong> is the outlier — ten teams forced to travel
+          for games. <strong>CAF</strong> and <strong>UEFA</strong>, with dozens of members,
+          stay home ~90% of the time.</p>
+      </div>
+    </section>
+
+    <!-- ════════ PART II · IS IT CHANGING? ════════ -->
+    <div class="part"><span class="part-no">Part II</span><h2 class="part-title">Is the world coming together?</h2></div>
+
+    <section class="block">
+      <div class="block-head">
+        <h3>A century of globalization — then a retreat</h3>
+        <p class="sub">Of all internationals played each year, what share crossed continents?
+          Intercontinental play climbed for a hundred years… and then went into reverse.</p>
+      </div>
+      <div class="chart-wrap">
+        <svg id="temporal" aria-label="Cross-continental match share over time"></svg>
+        <p class="caption" id="temporal-cap">Cross-continental play peaked at <strong>18%</strong>
+          in the 1990s, then fell back toward <strong>12%</strong> — as confederations built out
+          their own packed calendars (continental Nations Leagues, more regional qualifiers),
+          friendlies abroad got crowded out.</p>
+      </div>
+    </section>
+
+    <!-- ════════ PART III · HOW SMALL? ════════ -->
+    <div class="part"><span class="part-no">Part III</span><h2 class="part-title">Two degrees of football</h2></div>
+
+    <section class="block">
+      <div class="block-head">
+        <h3>Everyone is two matches from everyone</h3>
+        <p class="sub">For all the silos, the graph is a <em>small world</em>: short paths, tight
+          clustering. Pick any two nations and count the matches between them.</p>
+      </div>
+      <div class="chart-wrap">
+        <div class="sw-stats" id="sw-stats"><!-- filled --></div>
+        <svg id="smallworld" aria-label="Distribution of shortest match-chain lengths"></svg>
+        <p class="caption">Clustering <strong id="sw-cc"></strong> against
+          <strong id="sw-ccr"></strong> for a random graph of the same size — high clustering with
+          short paths is the textbook small-world signature.</p>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="block-head">
+        <h3>Connect any two nations</h3>
+        <p class="sub">The shortest chain of real matches linking two teams. Even the most
+          isolated sides are only a hop or two from the giants.</p>
+      </div>
+      <div class="chart-wrap">
+        <div class="connector">
+          <div class="conn-controls">
+            <label>From <select id="conn-from"></select></label>
+            <span class="conn-arrow">→</span>
+            <label>To <select id="conn-to"></select></label>
+          </div>
+          <div class="conn-result" id="conn-result"><!-- filled --></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ PART IV · WHO HOLDS IT TOGETHER ════════ -->
+    <div class="part"><span class="part-no">Part IV</span><h2 class="part-title">Who really holds it together</h2></div>
+
+    <section class="block">
+      <div class="block-head">
+        <h3>Brokers aren't the same as travelers</h3>
+        <p class="sub">Cross-share asks who plays abroad most. <em>Betweenness</em> asks who sits
+          on the most shortest paths between blocs — the teams the world routes through. They
+          disagree.</p>
+      </div>
+      <div class="chart-wrap">
+        <svg id="centrality" aria-label="Betweenness centrality versus cross-continental share"></svg>
+        <p class="caption" id="centrality-cap">Mexico brokers <em>and</em> travels. But
+          <strong>Qatar</strong>, <strong>Ghana</strong> and the Central American sides are
+          high-leverage brokers despite modest travel — and the densely-connected
+          <strong>core</strong> of world football, by eigenvector centrality, is the
+          <strong>Americas</strong>, not Europe.</p>
+      </div>
+    </section>
+
+    <!-- ════════ PART V · STRUCTURE AT EVERY SCALE ════════ -->
+    <div class="part"><span class="part-no">Part V</span><h2 class="part-title">Structure at every scale</h2></div>
+
+    <section class="block">
+      <div class="block-head">
+        <h3>Zoom in and the blocs keep splitting</h3>
+        <p class="sub">Turn up the community-detection resolution and the six confederations
+          fracture into recognizable sub-regions — the football world is structured all the way
+          down.</p>
+      </div>
+      <div class="chart-wrap">
+        <svg id="sunburst" aria-label="Nested sub-communities of world football"></svg>
+        <p class="caption">Inner ring: confederations. Outer ring: the sub-regions Louvain finds
+          at high resolution — Western Europe, the Caribbean, the Gulf, two African halves.
+          Hover a wedge for its members.</p>
+      </div>
+    </section>
+
+    <!-- ════════ PART VI · HOW FRAGILE? ════════ -->
+    <div class="part"><span class="part-no">Part VI</span><h2 class="part-title">Robust world, heavy bridges</h2></div>
+
+    <section class="block">
+      <div class="block-head">
+        <h3>Pull out the brokers and watch the bridges thin</h3>
+        <p class="sub">Remove teams worst-first by betweenness and track how many
+          cross-continental match-links survive — against removing the same number at random.</p>
+      </div>
+      <div class="chart-wrap">
+        <div class="sw-stats" id="rob-stats"><!-- filled --></div>
+        <svg id="robustness" aria-label="Cross-continental links surviving targeted vs random removal"></svg>
+        <p class="caption" id="rob-cap">The top 10 brokers carry a wildly disproportionate load —
+          removing them strips a quarter of all cross-continental links, twice as fast as random.
+          <strong>And yet</strong> the graph never breaks: every confederation stays reachable, so
+          world connectivity is resilient — there is no single point of failure.</p>
+      </div>
+    </section>
+
+    <section class="findings" id="findings"><!-- filled from network.json --></section>
+
+    <footer>
+      <p>Built from the <code>martj42</code> international-results history ·
+        analysis in <code>notebooks/01_network.py</code> · charts in D3 from a ~11&nbsp;KB
+        confederation-level export. No live API — the structure is the story.</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script src="../js/charts.js"></script>
+</body>
+</html>
