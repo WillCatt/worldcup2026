@@ -3,3 +3,9 @@ pandas>=2.1
 scipy>=1.11
 matplotlib>=3.8
 requests>=2.31
+# model-vs-market live capture (mlfootball/market/, notebooks/05_market.py)
+selenium>=4.20
+# player-similarity pipeline (notebooks/04_similarity.py)
+scikit-learn>=1.4
+umap-learn>=0.5
+pyreadr>=0.5

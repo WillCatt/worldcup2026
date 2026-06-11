@@ -144,7 +144,6 @@ out = {
     "sensitivity": sens,
     "history": hist,
 }
-dest = Path("site/data/travel.json")
-dest.parent.mkdir(parents=True, exist_ok=True)
+dest = Path(T.__file__).resolve().parent.parent / "site" / "data" / "travel.json"
 dest.write_text(json.dumps(out, ensure_ascii=False))
 print(f"wrote {dest} ({dest.stat().st_size/1024:.1f} KB)")

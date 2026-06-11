@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Penalty Geometry &amp; Game Theory · ML in Football</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    /* ── piece-specific: goal mouth, toggles, strategy table, the game ── */
+    .pen-goalwrap { width: 100%; max-width: 560px; margin: 0 auto; }
+    .pen-goalwrap svg { overflow: visible; }
+    .pen-post { stroke: var(--ink); stroke-width: 5; fill: none; stroke-linecap: square; }
+    .pen-net { stroke: rgba(26,23,20,.13); stroke-width: .6; }
+    .pen-ground { stroke: var(--ink); stroke-width: 2; opacity: .45; }
+    .pen-axlabel { font-family: "JetBrains Mono", monospace; font-size: 10px; fill: var(--muted); letter-spacing: .06em; }
+
+    .pen-controls { display: flex; flex-wrap: wrap; gap: 10px 16px; margin: 0 0 16px; align-items: center; }
+    .pen-grp { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+    .pen-grp .glbl { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .08em; color: var(--muted); padding: 8px 10px; background: #f4ece0; text-transform: uppercase; }
+    .pen-seg { font-family: "JetBrains Mono", monospace; font-size: 12px; padding: 8px 13px; border: none; background: var(--panel); color: var(--muted); cursor: pointer; border-left: 1px solid var(--line); }
+    .pen-seg:hover { color: var(--ink); }
+    .pen-seg.on { background: var(--amber); color: #fff; }
+    .pen-note { font-size: 13.5px; color: var(--muted); margin: 12px 4px 0; min-height: 1.4em; }
+    .pen-note b { color: var(--amber); }
+
+    table.pen-matrix { border-collapse: collapse; width: 100%; max-width: 560px; font-size: 14.5px; }
+    table.pen-matrix th, table.pen-matrix td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: right; }
+    table.pen-matrix th:first-child, table.pen-matrix td:first-child { text-align: left; font-family: "JetBrains Mono", monospace; font-size: 12.5px; }
+    table.pen-matrix thead th { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: .06em; color: var(--muted); text-transform: uppercase; }
+    table.pen-matrix tr.hi td { background: rgba(176,106,22,.09); }
+    table.pen-matrix .ci { color: var(--muted); font-size: 12.5px; font-family: "JetBrains Mono", monospace; }
+    .pen-verdict { background: rgba(176,106,22,.07); border: 1px solid rgba(176,106,22,.28); border-radius: 12px; padding: 14px 16px; margin: 16px 0 0; font-size: 15px; }
+    .pen-verdict b { color: var(--amber); }
+
+    /* the game */
+    .pen-game-head { display: flex; justify-content: space-between; align-items: baseline; font-family: "JetBrains Mono", monospace; font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+    .pen-game-head .saves { color: var(--amber); font-weight: 600; }
+    .pen-pips { display: flex; gap: 6px; }
+    .pen-pip { width: 13px; height: 13px; border-radius: 50%; border: 1.5px solid var(--muted); }
+    .pen-pip.save { background: #2a8f8f; border-color: #2a8f8f; }
+    .pen-pip.goal { background: #c0533b; border-color: #c0533b; }
+    .pen-dives { display: flex; gap: 10px; justify-content: center; margin: 16px auto 2px; max-width: 520px; }
+    .pen-dive { font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 15px; padding: 12px 18px; border: 1.5px solid var(--ink); background: var(--panel); color: var(--ink); border-radius: 11px; cursor: pointer; flex: 1; transition: transform .08s, background .15s, color .15s; }
+    .pen-dive:hover:not(:disabled) { background: var(--ink); color: var(--bg); transform: translateY(-1px); }
+    .pen-dive:disabled { opacity: .4; cursor: default; }
+    .pen-game-result { text-align: center; font-family: "JetBrains Mono", monospace; font-size: 13.5px; min-height: 1.5em; margin-top: 14px; color: var(--muted); }
+    .pen-game-result b { color: var(--ink); }
+    .pen-endcard { text-align: center; padding: 10px 0; }
+    .pen-endcard .big { font-size: 52px; font-weight: 700; color: var(--amber); line-height: 1; letter-spacing: -.02em; }
+    .pen-endcard .sub { font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--muted); margin-top: 8px; }
+    .pen-endcard .vs { display: flex; gap: 28px; justify-content: center; margin: 18px 0; flex-wrap: wrap; }
+    .pen-endcard .vs div { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--muted); }
+    .pen-endcard .vs b { display: block; font-size: 24px; color: var(--ink); font-family: "Space Grotesk", sans-serif; }
+    .pen-endcard .fb { font-size: 17px; max-width: 44ch; margin: 8px auto 18px; color: #443e38; }
+    .pen-replay { font-family: "JetBrains Mono", monospace; font-size: 13px; padding: 10px 20px; border: 1px solid var(--ink); background: var(--panel); color: var(--ink); border-radius: 999px; cursor: pointer; }
+    .pen-replay:hover { background: var(--ink); color: var(--bg); }
+    .pen-take { border-left: 3px solid var(--amber); padding-left: 16px; margin: 22px 0 0; font-size: 19px; font-weight: 600; line-height: 1.35; letter-spacing: -.01em; }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back-link" href="../index.html">← All explorations</a>
+    <header class="hero">
+      <p class="eyebrow">Machine Learning in Football · 06</p>
+      <h1>A coin flip that isn't</h1>
+      <p class="lede">A penalty looks like luck and feels like nerve. Read enough of them as
+        geometry and it becomes something else: the corners win, dead centre is wasted, keepers
+        are guessing in the dark — and the data flatly refuses to tell you which way they dive.
+        <em>Four acts on where the ball goes, then take the gloves yourself.</em></p>
+    </header>
+
+    <section class="stats" id="stats"><!-- filled from penalties.json --></section>
+
+    <!-- ── COLD OPEN ───────────────────────────────────── -->
+    <section class="block">
+      <div class="block-head">
+        <h3 id="cold-h">One kick, twelve yards</h3>
+        <p class="sub" id="cold-sub">Start with a single penalty, plotted on a true-scale goal, with
+          the interpretable model's verdict on it. Then zoom out to every kick in the dataset.</p>
+      </div>
+      <div class="chart-wrap narrow">
+        <div class="pen-goalwrap"><svg id="coldopen" aria-label="A famous penalty plotted on the goal"></svg></div>
+        <p class="caption" id="cold-cap">—</p>
+      </div>
+    </section>
+
+    <!-- ════════ PART I ════════ -->
+    <div class="part"><span class="part-no">Act I</span><h2 class="part-title">Where the ball goes</h2></div>
+    <section class="block">
+      <div class="block-head">
+        <h3>Penalties live in the corners — almost never dead centre</h3>
+        <p class="sub">Every kick is mirrored onto a right-footed frame, so the natural (open-body)
+          side is always to the right. The heatmap is a kernel-density estimate of where shots cross
+          the line. Toggle the cuts; <em>the corners stay warm, the middle stays cold</em>.</p>
+      </div>
+      <div class="chart-wrap narrow">
+        <div class="pen-controls" id="kde-controls"></div>
+        <div class="pen-goalwrap"><svg id="kde" aria-label="Penalty placement density on the goal"></svg></div>
+        <div style="display:flex;justify-content:space-between;max-width:80%;margin:4px auto 0;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)"><span>← across body</span><span>natural side →</span></div>
+        <p class="pen-note" id="kde-note">—</p>
+      </div>
+      <p class="pen-take">Shooters already know where the goals are: tight to the post. The hard part is that the keeper knows it too.</p>
+    </section>
+
+    <!-- ════════ PART II ════════ -->
+    <div class="part"><span class="part-no">Act II</span><h2 class="part-title">Where keepers go</h2></div>
+    <section class="block">
+      <div class="block-head">
+        <h3>You can't actually measure where keepers dive</h3>
+        <p class="sub">The dirty secret of penalty analytics on open data: there is <em>no
+          dive-direction column</em>. You only know which way a keeper went when they <em>saved
+          it</em>. A keeper beaten by a perfect strike is recorded identically to one who guessed
+          wrong — a clean goal, direction unknown.</p>
+      </div>
+      <div class="chart-wrap narrow">
+        <div id="dive" aria-label="Shot placement vs observable keeper-dive distribution"></div>
+        <p class="caption">What we <strong>can</strong> measure (all shot placements) vs the sliver
+          of dives we can actually see — recoverable for only <span data-pen="dive_coverage">—</span>
+          of kicks, biased toward shots hit near the keeper. Anyone quoting a tidy
+          “keepers dive right 57%” from data like this is filling the gap with a guess.</p>
+      </div>
+      <p class="pen-take">The most-cited keeper statistic in football — which way they dive — is the one this data refuses to give up.</p>
+    </section>
+
+    <!-- ════════ PART III ════════ -->
+    <div class="part"><span class="part-no">Act III</span><h2 class="part-title">Is anyone playing Nash?</h2></div>
+    <section class="block">
+      <div class="block-head">
+        <h3>If every placement scored equally, shooters would be at equilibrium</h3>
+        <p class="sub">Game theory's one clean prediction: at a mixed-strategy equilibrium, every
+          option you use must pay the same. For a taker, a zone's payoff is just how often it scores.
+          So — do the zones shooters use convert equally? <em>(Chiappori, Groseclose &amp; Levitt 2002;
+          Palacios-Huerta 2003.)</em></p>
+      </div>
+      <div class="chart-wrap narrow">
+        <table class="pen-matrix" id="nash">
+          <thead><tr><th>Placement</th><th>N</th><th>Conversion</th><th>95% CI</th><th>Usage</th></tr></thead>
+          <tbody><!-- filled --></tbody>
+        </table>
+        <div class="pen-verdict" id="nash-verdict">—</div>
+        <p class="caption" id="nash-cap">—</p>
+      </div>
+      <p class="pen-take" id="nash-take">—</p>
+    </section>
+
+    <!-- ════════ THE GAME ════════ -->
+    <div class="part"><span class="part-no">The payoff</span><h2 class="part-title">You're the keeper</h2></div>
+    <section class="block">
+      <div class="block-head">
+        <h3>Five kicks. Real placements. No coin flips.</h3>
+        <p class="sub">Each kick is a <em>real StatsBomb penalty</em>, drawn from the distribution you
+          just saw. Pick your dive before the ball is struck. Guess the side and you still have to
+          reach it — a perfect kick into the top corner beats you anyway.</p>
+      </div>
+      <div class="chart-wrap narrow" id="game"><!-- built by JS --></div>
+    </section>
+
+    <!-- ════════ PART IV ════════ -->
+    <div class="part"><span class="part-no">Act IV</span><h2 class="part-title">The pressure cooker</h2></div>
+    <section class="block">
+      <div class="block-head">
+        <h3>Is the fifth kick where shootouts are won — or just where the best takers wait?</h3>
+        <p class="sub">Conversion by the taker's order number, with 95% CIs. The bars are wide —
+          there simply aren't many fifth kicks in open data.</p>
+      </div>
+      <div class="chart-wrap narrow">
+        <div id="survival" aria-label="Per-kick shootout conversion with confidence intervals"></div>
+        <p class="caption"><strong>The confound:</strong> kick order is manager-chosen, so order
+          effects and taker quality are entangled. Even a real dip at kick five wouldn't prove
+          pressure — it could just be who managers choose to send when.</p>
+      </div>
+      <p class="pen-take" id="press-take">The fifth kick looks no scarier than the first — once you remember that managers, not chance, decide who takes it.</p>
+    </section>
+
+    <section class="findings" id="findings"><!-- filled from penalties.json --></section>
+
+    <footer>
+      <p>Built on <span data-pen="n_total">—</span> penalties from
+        <span data-pen="n_competitions">—</span> competitions of
+        <a href="https://github.com/statsbomb/open-data" style="color:#443e38">StatsBomb open data</a> ·
+        mirroring, dive inference, the equilibrium test and Kaplan–Meier survival in
+        <code>Penalty-Geometry/pipeline</code> · charts hand-drawn in D3 · no live API.</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script src="../js/penalties.js"></script>
+</body>
+</html>

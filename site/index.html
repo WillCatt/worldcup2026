@@ -96,26 +96,127 @@
         </div>
       </a>
 
-      <!-- ── 04 · TEMPORAL (soon) ──────────────────────── -->
-      <div class="tile soon">
+      <!-- ── 04 · CLUB & COUNTRY (live) ────────────────── -->
+      <a class="tile" href="pieces/squads/index.html">
         <span class="tile-thumb">
           <svg viewBox="0 0 320 150" aria-hidden="true">
-            <path d="M40 120 C 110 110, 150 50, 200 44 C 240 40, 260 78, 280 92"
-                  fill="none" stroke="#b06a16" stroke-width="2.5"/>
-            <path d="M40 120 C 110 110, 150 50, 200 44 C 240 40, 260 78, 280 92 L280 128 L40 128 Z"
-                  fill="#b06a16" opacity=".12"/>
-            <circle cx="200" cy="44" r="4.5" fill="#b06a16"/>
+            <!-- abstract sankey: one source fanning into several leagues -->
+            <g fill="none" stroke-width="7" stroke-linecap="butt" opacity=".55">
+              <path d="M60 75 C 150 75, 170 38, 260 38" stroke="#b06a16"/>
+              <path d="M60 75 C 150 75, 170 62, 260 62" stroke="#2a8f8f"/>
+              <path d="M60 75 C 150 75, 170 86, 260 86" stroke="#4a6d8c"/>
+              <path d="M60 75 C 150 75, 170 110, 260 110" stroke="#3a8f57"/>
+            </g>
+            <rect x="50" y="44" width="10" height="62" rx="2" fill="#b06a16"/>
+            <rect x="260" y="32" width="10" height="13" rx="2" fill="#b06a16"/>
+            <rect x="260" y="56" width="10" height="13" rx="2" fill="#2a8f8f"/>
+            <rect x="260" y="80" width="10" height="13" rx="2" fill="#4a6d8c"/>
+            <rect x="260" y="104" width="10" height="13" rx="2" fill="#3a8f57"/>
           </svg>
         </span>
         <div class="tile-body">
-          <div class="tile-meta"><span class="tile-no">04</span><span>Temporal</span>
-            <span class="chip-status soon">Soon</span></div>
-          <h3>Is football globalizing?</h3>
-          <p>A century of cross-continental play, traced year by year — climbing for a hundred
-            years, then quietly going into reverse.</p>
-          <span class="tile-cta">Coming soon</span>
+          <div class="tile-meta"><span class="tile-no">04</span><span>Club &amp; Country</span>
+            <span class="chip-status live">Live</span></div>
+          <h3>The league dependency map</h3>
+          <p>Where all 1,246 squad players earn their living — a Sankey of nations into leagues,
+            a domestic-dependency stat per team, and the unglamorous entity-resolution that makes
+            it trustworthy.</p>
+          <span class="tile-cta">Explore →</span>
         </div>
-      </div>
+      </a>
+
+      <!-- ── 05 · PLAYER SIMILARITY (live) ─────────────── -->
+      <a class="tile" href="pieces/similarity/index.html">
+        <span class="tile-thumb">
+          <svg viewBox="0 0 320 150" aria-hidden="true">
+            <!-- a hero dot with spokes to its nearest stylistic neighbours -->
+            <g stroke="#b06a16" stroke-width="1.4" opacity=".5">
+              <line x1="160" y1="75" x2="96"  y2="46"/>
+              <line x1="160" y1="75" x2="232" y2="50"/>
+              <line x1="160" y1="75" x2="110" y2="112"/>
+              <line x1="160" y1="75" x2="226" y2="108"/>
+              <line x1="160" y1="75" x2="250" y2="80"/>
+            </g>
+            <g opacity=".7">
+              <circle cx="60"  cy="92"  r="4" fill="#7C9CB0"/>
+              <circle cx="280" cy="58"  r="4" fill="#8FA88B"/>
+              <circle cx="86"  cy="120" r="4" fill="#B07C9E"/>
+              <circle cx="300" cy="110" r="4" fill="#C18A5E"/>
+              <circle cx="44"  cy="56"  r="4" fill="#A89A6B"/>
+            </g>
+            <circle cx="96"  cy="46"  r="6" fill="#7C9CB0"/>
+            <circle cx="232" cy="50"  r="6" fill="#8FA88B"/>
+            <circle cx="110" cy="112" r="6" fill="#B07C9E"/>
+            <circle cx="226" cy="108" r="6" fill="#C18A5E"/>
+            <circle cx="250" cy="80"  r="6" fill="#A89A6B"/>
+            <circle cx="160" cy="75" r="10" fill="#b06a16"/>
+            <circle cx="160" cy="75" r="14" fill="none" stroke="#b06a16" stroke-width="1.5" opacity=".5"/>
+          </svg>
+        </span>
+        <div class="tile-body">
+          <div class="tile-meta"><span class="tile-no">05</span><span>Player Similarity</span>
+            <span class="chip-status live">Live</span></div>
+          <h3>Who plays like whom?</h3>
+          <p>A per-90 fingerprint for every coverable squad player, embedded by position into a
+            map you can explore. Pick a star and meet their five closest stylistic matches —
+            similarity measured in full feature space, not on the map.</p>
+          <span class="tile-cta">Explore →</span>
+        </div>
+      </a>
+
+      <!-- ── 06 · PENALTY GEOMETRY (live) ──────────────── -->
+      <a class="tile" href="pieces/penalties.html">
+        <span class="tile-thumb">
+          <svg viewBox="0 0 320 150" aria-hidden="true">
+            <!-- abstract goal mouth: posts, net, two warm corner shots + a dive arc -->
+            <path d="M70 116 L70 40 L250 40 L250 116" fill="none" stroke="#1a1714" stroke-width="3"/>
+            <g stroke="#e6ded2" stroke-width="1">
+              <path d="M100 40 L100 116 M130 40 L130 116 M160 40 L160 116 M190 40 L190 116 M220 40 L220 116"/>
+              <path d="M70 65 L250 65 M70 90 L250 90"/>
+            </g>
+            <line x1="70" y1="116" x2="250" y2="116" stroke="#1a1714" stroke-width="2" opacity=".45"/>
+            <path d="M160 112 q 28 -10 40 -44" fill="none" stroke="#7a6e63" stroke-width="1.5" stroke-dasharray="3 4"/>
+            <circle cx="86"  cy="104" r="8" fill="#b06a16"/>
+            <circle cx="236" cy="100" r="8" fill="#c0533b"/>
+            <rect x="151" y="86" width="18" height="30" rx="6" fill="none" stroke="#7a6e63" stroke-width="2"/>
+          </svg>
+        </span>
+        <div class="tile-body">
+          <div class="tile-meta"><span class="tile-no">06</span><span>Penalty Geometry</span>
+            <span class="chip-status live">Live</span></div>
+          <h3>A coin flip that isn't</h3>
+          <p>Where shooters aim, where keepers go, and whether anyone is playing Nash — KDE
+            placement maps, a mixed-strategy equilibrium test, and an honest admission that the
+            data can't see a dive. Ends with a playable keeper game.</p>
+          <span class="tile-cta">Explore →</span>
+        </div>
+      </a>
+
+      <!-- ── 07 · MODEL vs MARKET (live) ───────────────── -->
+      <a class="tile" href="pieces/market.html">
+        <span class="tile-thumb">
+          <svg viewBox="0 0 320 150" aria-hidden="true">
+            <!-- market line (teal) drifting toward a flat model reference (amber); kickoff rule -->
+            <line x1="30" y1="64" x2="262" y2="64" stroke="#b06a16" stroke-width="2" stroke-dasharray="6 4"/>
+            <path d="M30 96 C70 90 92 70 120 78 S176 96 210 80 248 58 262 60"
+                  fill="none" stroke="#2a8f8f" stroke-width="2.4"/>
+            <path d="M30 110 C74 112 104 104 132 108 S196 116 232 104 256 100 262 100"
+                  fill="none" stroke="#8bb6b6" stroke-width="1.4" stroke-dasharray="1 4"/>
+            <line x1="262" y1="28" x2="262" y2="124" stroke="#1a1714" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>
+            <circle cx="262" cy="60" r="3.5" fill="#2a8f8f"/>
+            <circle cx="262" cy="64" r="3.5" fill="#b06a16"/>
+          </svg>
+        </span>
+        <div class="tile-body">
+          <div class="tile-meta"><span class="tile-no">07</span><span>Model vs Market</span>
+            <span class="chip-status live">Live</span></div>
+          <h3>Can a hobbyist model beat the closing line?</h3>
+          <p>A Monte-Carlo model's probability is frozen before each kickoff and scored against
+            the bookmakers' de-vigged odds — Brier, calibration, and the honest gap. Losing to the
+            market is the expected, publishable result. Live through the tournament.</p>
+          <span class="tile-cta">Explore →</span>
+        </div>
+      </a>
 
     </section>
 

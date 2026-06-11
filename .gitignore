@@ -2,6 +2,8 @@
 data/results.csv
 data/*.cache
 data/live/
+# FBref Big-5 stat tables (worldfootballR_data mirror) — reproducible downloads (~150MB)
+data/fbref_cache/
 
 # python
 __pycache__/
@@ -18,3 +20,12 @@ figures/*.png
 
 # build artifacts
 *.egg-info/
+
+# Model-vs-Market live capture (unattended; not committed)
+data/odds.sqlite
+data/odds.sqlite-*
+data/raw_html/
+data/logs/
+data/*_status.json
+mlfootball/market/deploy/*.plist
+data/demo.sqlite

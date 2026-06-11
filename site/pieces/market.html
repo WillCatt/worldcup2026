@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Model vs Market · ML in Football</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <style>
+    /* ── piece-specific: model/market drift, scoreboard, calibration ── */
+    /* ONE colour for the model, ONE for the market. Outcomes split by dash, not hue. */
+    :root { --model: #b06a16; --market: #2a8f8f; --back: #8bb6b6; --win:#2a8f8f; --loss:#c0533b; }
+
+    .mvm-fresh { display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+      font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--muted);
+      margin:-8px 0 30px; }
+    .mvm-dot { width:9px; height:9px; border-radius:50%; background:#3a8f57; flex:none; }
+    .mvm-dot.degraded { background:var(--model); } .mvm-dot.critical { background:var(--loss); }
+    .mvm-banner { background:rgba(176,106,22,.08); border:1px solid rgba(176,106,22,.3);
+      border-radius:10px; padding:10px 14px; font-size:13.5px; color:#5e3c0b; margin:0 0 26px; }
+    .mvm-banner b { color:var(--model); }
+    .mvm-disclaim { font-size:13px; color:var(--muted); border-left:3px solid var(--line);
+      padding-left:14px; margin:18px 0 0; max-width:62ch; }
+
+    /* legend */
+    .mvm-legend { display:flex; gap:18px 22px; flex-wrap:wrap; align-items:center;
+      font-family:"JetBrains Mono",monospace; font-size:11.5px; color:#443e38; margin:2px 0 14px; }
+    .mvm-legend .key { display:inline-flex; align-items:center; gap:7px; }
+    .mvm-legend svg { overflow:visible; }
+
+    /* match picker */
+    .mvm-pick { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:0 0 16px; }
+    .mvm-pick select { font-family:"Space Grotesk",sans-serif; font-size:14.5px; padding:8px 12px;
+      border:1px solid var(--line); border-radius:9px; background:var(--panel); color:var(--ink); }
+    .mvm-pick .nav { font-family:"JetBrains Mono",monospace; font-size:13px; padding:8px 12px;
+      border:1px solid var(--ink); background:var(--panel); color:var(--ink); border-radius:9px; cursor:pointer; }
+    .mvm-pick .nav:hover { background:var(--ink); color:var(--bg); }
+    .mvm-matchmeta { font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--muted);
+      margin:0 2px 8px; }
+
+    /* per-match verdict card */
+    .mvm-verdict { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0 0; }
+    .mvm-vcard { border:1px solid var(--line); border-radius:12px; padding:14px 16px; background:var(--panel); }
+    .mvm-vcard .lbl { font-family:"JetBrains Mono",monospace; font-size:11px; letter-spacing:.06em;
+      text-transform:uppercase; color:var(--muted); }
+    .mvm-vcard .big { font-size:30px; font-weight:700; letter-spacing:-.02em; margin-top:6px; }
+    .mvm-vcard.model .big { color:var(--model); } .mvm-vcard.market .big { color:var(--market); }
+    .mvm-vcard .sub { font-size:12.5px; color:var(--muted); margin-top:4px; }
+    .mvm-lesswrong { grid-column:1/-1; text-align:center; font-size:15px; padding:8px;
+      border-radius:10px; background:rgba(42,143,143,.08); }
+    .mvm-lesswrong b.model { color:var(--model); } .mvm-lesswrong b.market { color:var(--market); }
+
+    /* editorial cards */
+    .mvm-cards { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:8px 0 0; }
+    @media (max-width:680px){ .mvm-cards,.mvm-verdict{ grid-template-columns:1fr; } }
+    .mvm-card { border:1px solid var(--line); border-radius:12px; padding:18px; background:var(--panel); }
+    .mvm-card .tag { font-family:"JetBrains Mono",monospace; font-size:11px; letter-spacing:.06em;
+      text-transform:uppercase; }
+    .mvm-card.win .tag { color:var(--model); } .mvm-card.miss .tag { color:var(--loss); }
+    .mvm-card .quote { font-size:17.5px; line-height:1.4; margin:10px 0 6px; letter-spacing:-.01em; }
+    .mvm-card .n { font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--muted); }
+
+    /* methods */
+    details.mvm-methods { margin-top:18px; border:1px solid var(--line); border-radius:12px;
+      padding:0 18px; background:var(--panel); }
+    details.mvm-methods > summary { cursor:pointer; padding:16px 0; font-weight:600; font-size:16px; list-style:none; }
+    details.mvm-methods > summary::-webkit-details-marker { display:none; }
+    details.mvm-methods > summary::before { content:"▸ "; color:var(--amber); }
+    details.mvm-methods[open] > summary::before { content:"▾ "; }
+    details.mvm-methods .mbody { padding:0 0 18px; font-size:14.5px; color:#443e38; max-width:70ch; }
+    details.mvm-methods h4 { margin:18px 0 6px; font-size:15px; }
+    table.mvm-devig { border-collapse:collapse; width:100%; max-width:520px; font-size:13.5px; margin:8px 0 4px; }
+    table.mvm-devig th, table.mvm-devig td { padding:7px 10px; border-bottom:1px solid var(--line); text-align:right; }
+    table.mvm-devig th:first-child, table.mvm-devig td:first-child { text-align:left; font-family:"JetBrains Mono",monospace; }
+    table.mvm-devig thead th { font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--muted); text-transform:uppercase; }
+    table.mvm-devig td.gap { color:var(--model); font-family:"JetBrains Mono",monospace; }
+
+    .mvm-axislbl { font-size:12px; fill:var(--muted); font-family:"JetBrains Mono",monospace; }
+    .mvm-anno { font-size:11.5px; font-weight:600; fill:var(--ink); font-family:"JetBrains Mono",monospace; }
+    .mvm-directlbl { font-size:11.5px; font-weight:600; font-family:"JetBrains Mono",monospace; }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back-link" href="../index.html">← All explorations</a>
+    <header class="hero">
+      <p class="eyebrow">Machine Learning in Football · 07</p>
+      <h1>Can a hobbyist model beat the closing line?</h1>
+      <p class="lede">Probably not — and that's the point. Every match at this World Cup, a
+        Monte-Carlo model's probability is frozen before kickoff and scored against the
+        bookmakers' de-vigged odds. The closing line is one of the most efficient forecasts
+        in the world; <em>losing to it honestly is worth more than a lucky win.</em></p>
+      <p class="mvm-disclaim">Paper evaluation only. Probabilities are shown for measurement,
+        not as betting advice; no odds here are actionable.</p>
+    </header>
+
+    <div id="banner"></div>
+    <div class="mvm-fresh" id="fresh"></div>
+
+    <section class="stats" id="stats"><!-- filled from market.json --></section>
+
+    <!-- ════════ PART I — the drift ════════ -->
+    <div class="part"><span class="part-no">Part I</span><h2 class="part-title">The drift</h2></div>
+    <section class="block">
+      <div class="block-head">
+        <h3>One match, market open to kickoff</h3>
+        <p class="sub">The market's implied probability for each outcome as it moves toward
+          kickoff, with the model's <em>frozen</em> probability drawn as a flat line. The story
+          is the <em>gap</em> between them — shaded, and widest where the model most disagrees.
+          Sharp repricings (steam) are marked; full-time stamps the result.</p>
+      </div>
+      <div class="mvm-pick" id="pick"></div>
+      <div class="mvm-matchmeta" id="matchmeta"></div>
+      <div class="mvm-legend" id="legend"></div>
+      <div class="chart-wrap"><svg id="drift" aria-label="Implied probability drift"></svg></div>
+      <p class="caption" id="driftcap">—</p>
+      <div class="mvm-verdict" id="verdict"></div>
+    </section>
+
+    <!-- ════════ PART II — the scoreboard ════════ -->
+    <div class="part"><span class="part-no">Part II</span><h2 class="part-title">The scoreboard</h2></div>
+    <section class="block">
+      <div class="block-head">
+        <h3>Who is less wrong, cumulatively?</h3>
+        <p class="sub">Brier score (lower is better) averaged over every settled match, for the
+          model, the de-vigged closing line, the opening line, and a uniform dummy. The headline
+          number is meaningless without <em>N</em>, so N is never out of sight.</p>
+      </div>
+      <div class="mvm-legend" id="legend2"></div>
+      <div class="chart-wrap"><svg id="race" aria-label="Cumulative Brier race"></svg></div>
+      <p class="caption" id="racecap">—</p>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h3>The model's best call, and its worst</h3>
+        <p class="sub">Single matches are anecdotes — shown here only beside the running count
+          that puts them in context.</p></div>
+      <div class="mvm-cards" id="cards"></div>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h3>Calibration — when it says 30%, does it happen 30% of the time?</h3>
+        <p class="sub">Every predicted probability binned against how often the outcome actually
+          occurred. The diagonal is perfect calibration. Bins are thin this early, so each point
+          carries its count — read the sparse ones with suspicion.</p></div>
+      <div class="mvm-legend" id="legend3"></div>
+      <div class="chart-wrap narrow"><svg id="calib" aria-label="Reliability diagram"></svg></div>
+      <p class="caption" id="calibcap">—</p>
+    </section>
+
+    <!-- ════════ PART III — methods ════════ -->
+    <div class="part"><span class="part-no">Part III</span><h2 class="part-title">How it's measured</h2></div>
+    <section class="block">
+      <details class="mvm-methods" id="methods" open>
+        <summary>Methods &amp; honesty notes</summary>
+        <div class="mbody" id="methods-body"></div>
+      </details>
+    </section>
+
+    <footer>
+      <p>Part of <a href="../index.html">Machine Learning in Football</a>. Odds captured from a
+      hardened Sportsbet scraper with an independent second-book cross-check; model probabilities
+      frozen pre-kickoff and never edited. Source: <code>mlfootball/market/</code>.</p>
+    </footer>
+  </main>
+  <script src="../js/market.js"></script>
+</body>
+</html>

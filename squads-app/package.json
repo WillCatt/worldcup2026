@@ -1,0 +1,23 @@
+{
+  "name": "club-and-country-2026",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "syncdata": "node -e \"require('fs').copyFileSync('../site/data/nations.json','public/nations.json')\"",
+    "predev": "npm run syncdata",
+    "prebuild": "npm run syncdata",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "d3-sankey": "^0.12.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11"
+  }
+}
