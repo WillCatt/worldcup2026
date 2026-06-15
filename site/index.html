@@ -44,29 +44,29 @@
         </div>
       </a>
 
-      <!-- ── 02 · FORECAST (soon) ──────────────────────── -->
-      <div class="tile soon">
+      <!-- ── 02 · FORECAST (live) ──────────────────────── -->
+      <a class="tile" href="pieces/forecast.html">
         <span class="tile-thumb">
           <svg viewBox="0 0 320 150" aria-hidden="true">
-            <g fill="#2a8f8f" opacity=".85">
-              <rect x="40"  y="40"  width="30" height="86" rx="3"/>
-              <rect x="86"  y="58"  width="30" height="68" rx="3"/>
-              <rect x="132" y="74"  width="30" height="52" rx="3"/>
-              <rect x="178" y="86"  width="30" height="40" rx="3"/>
-              <rect x="224" y="98"  width="30" height="28" rx="3"/>
-            </g>
-            <rect x="40" y="40" width="30" height="86" rx="3" fill="#b06a16"/>
+            <!-- a 1X2 probability bar + a tick/cross, evoking predict-then-mark -->
+            <rect x="36" y="56" width="150" height="26" rx="4" fill="#b06a16"/>
+            <rect x="186" y="56" width="58" height="26" fill="#b8a892"/>
+            <rect x="244" y="56" width="40" height="26" rx="4" fill="#2a8f8f"/>
+            <path d="M48 104 l12 12 l22 -26" fill="none" stroke="#2a8f8f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M110 104 l26 26 M136 104 l-26 26" stroke="#c0533b" stroke-width="4" stroke-linecap="round"/>
+            <path d="M170 104 l12 12 l22 -26" fill="none" stroke="#2a8f8f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </span>
         <div class="tile-body">
           <div class="tile-meta"><span class="tile-no">02</span><span>Forecast</span>
-            <span class="chip-status soon">Soon</span></div>
-          <h3>Who wins the World Cup?</h3>
-          <p>A Dixon-Coles goals model and 50k Monte-Carlo bracket sims turn match history into
-            live title odds — checked against the bookmakers.</p>
-          <span class="tile-cta">Coming soon</span>
+            <span class="chip-status live">Live</span></div>
+          <h3>Every match, predicted — then marked</h3>
+          <p>A Dixon-Coles goals model rates every World Cup match as probabilities, frozen the day
+            before kickoff — then grades itself against the actual results. Pick a fixture, or watch
+            the scorecard fill. Live through the tournament.</p>
+          <span class="tile-cta">Explore →</span>
         </div>
-      </div>
+      </a>
 
       <!-- ── 03 · TRAVEL BURDEN (live) ─────────────────── -->
       <a class="tile" href="pieces/travel/index.html">
@@ -185,9 +185,9 @@
           <div class="tile-meta"><span class="tile-no">06</span><span>Penalty Geometry</span>
             <span class="chip-status live">Live</span></div>
           <h3>A coin flip that isn't</h3>
-          <p>Where shooters aim, where keepers go, and whether anyone is playing Nash — KDE
-            placement maps, a mixed-strategy equilibrium test, and an honest admission that the
-            data can't see a dive. Ends with a playable keeper game.</p>
+          <p>Shooter picks a side, keeper picks a side — every World Cup shootout kick as a 3×3
+            payoff matrix, with the keeper's actual dive on each one. A mixed-strategy equilibrium
+            test, the abandoned centre, and a playable keeper game.</p>
           <span class="tile-cta">Explore →</span>
         </div>
       </a>
@@ -214,6 +214,29 @@
           <p>A Monte-Carlo model's probability is frozen before each kickoff and scored against
             the bookmakers' de-vigged odds — Brier, calibration, and the honest gap. Losing to the
             market is the expected, publishable result. Live through the tournament.</p>
+          <span class="tile-cta">Explore →</span>
+        </div>
+      </a>
+
+      <!-- ── 08 · SQUAD VALUE (live) ───────────────────── -->
+      <a class="tile" href="pieces/squad-value.html">
+        <span class="tile-thumb">
+          <svg viewBox="0 0 320 150" aria-hidden="true">
+            <!-- a value ladder: descending bars, amber, one teal challenger -->
+            <rect x="40" y="34" width="220" height="13" rx="3" fill="#b06a16"/>
+            <rect x="40" y="54" width="186" height="13" rx="3" fill="#b06a16"/>
+            <rect x="40" y="74" width="150" height="13" rx="3" fill="#b06a16"/>
+            <rect x="40" y="94" width="104" height="13" rx="3" fill="#2a8f8f"/>
+            <rect x="40" y="114" width="62" height="13" rx="3" fill="#cdbfae"/>
+          </svg>
+        </span>
+        <div class="tile-body">
+          <div class="tile-meta"><span class="tile-no">08</span><span>Squad Value</span>
+            <span class="chip-status live">Live</span></div>
+          <h3>The price of a starting XI</h3>
+          <p>Every 2026 squad priced by Transfermarkt, then every group game as a value mismatch —
+            click a fixture to open both best elevens, most valuable first. A crowd-sourced strength
+            prior, honest about who it can and can't put a number on.</p>
           <span class="tile-cta">Explore →</span>
         </div>
       </a>

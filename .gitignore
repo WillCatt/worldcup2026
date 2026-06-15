@@ -4,6 +4,10 @@ data/*.cache
 data/live/
 # FBref Big-5 stat tables (worldfootballR_data mirror) — reproducible downloads (~150MB)
 data/fbref_cache/
+# Transfermarkt scraped squad pages (~8MB) — reproducible; keep the small id map tracked
+data/tm_cache/*.html
+# penalty zone-scheme reference images (only used to decode the grid; ~10MB)
+data/raw/penalty_*.png
 
 # python
 __pycache__/
