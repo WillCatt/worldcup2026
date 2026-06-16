@@ -197,17 +197,34 @@
     ].forEach(function (c) { var a = f.append("article"); a.append("h3").text(c.h); a.append("p").html(c.p); });
   }
 
-  // ── Part III: parameter simulator (real Dixon-Coles recompute, live) ──────
-  function dcOneXtwo(pre, sim, home, away, country, wv, wh) {
+  // ── Part III: parameter simulator — anatomy of a prediction ───────────────
+  // Every ingredient is a real term in the model. Strip them all → a dead heat;
+  // switch them all on → the published forecast. All recomputed live, real math.
+  var KNOBS = [
+    { key: "att", group: "base", label: "Attacking strength", sub: "each side's scoring power", slider: true },
+    { key: "def", group: "base", label: "Defensive strength", sub: "each side's resistance at the back", slider: true },
+    { key: "home", group: "base", label: "Home / host advantage", sub: "the fitted venue edge — for a host playing in its own country", slider: true, max: 150, ends: ["off", "1.5×"] },
+    { key: "recency", group: "base", label: "Weight recent form", sub: "count recent results more (2-yr half-life) vs all history equally", toggleOnly: true },
+    { key: "rho", group: "base", label: "Draw correction (Dixon-Coles ρ)", sub: "the low-score tweak that fine-tunes draw likelihood", toggleOnly: true },
+    { key: "value", group: "extra", label: "Squad value", sub: "blend in financial strength from Transfermarkt market values", slider: true }
+  ];
+  function fullState() { return { att: 1, def: 1, home: 1, recency: 1, rho: 1, value: 0, attW: 1, defW: 1, homeW: 1, valueW: 0.5 }; }
+  function sliderInit(k) { return k === "value" ? 50 : 100; }
+
+  function simRecompute(sim, st, f) {
+    var def = sim.decay_presets.find(function (p) { return p.key === "default"; });
+    var eq = sim.decay_presets.find(function (p) { return p.key === "equal"; }) || def;
+    var pre = st.recency ? def : eq;
     var S = pre.strengths, vz = sim.value_z, sc = sim.meta.value_scale, N = sim.meta.max_goals;
-    var hosts = sim.hosts, rho = pre.rho, ha = pre.home_adv;
-    if (!S[home] || !S[away]) return null;
-    function adj(t) { var b = wv * sc * (vz[t] || 0); return [S[t][0] + b, S[t][1] + b]; }
-    var ah = adj(home), aa = adj(away);
-    var advH = (hosts.indexOf(home) >= 0 && home === country) ? ha * wh : 0;
-    var advA = (hosts.indexOf(away) >= 0 && away === country) ? ha * wh : 0;
-    var muH = Math.exp(ah[0] - aa[1] + advH), muA = Math.exp(aa[0] - ah[1] + advA);
-    function pois(mu, k) { var p = Math.exp(-mu), t = p; for (var i = 1; i <= k; i++) { t *= mu / i; } return t; }
+    var hosts = sim.hosts, ha = pre.home_adv, rho = st.rho ? pre.rho : 0;
+    if (!S[f.home] || !S[f.away]) return null;
+    var wA = st.att ? st.attW : 0, wD = st.def ? st.defW : 0, wH = st.home ? st.homeW : 0, wV = st.value ? st.valueW : 0;
+    function logmu(team, oppo) {
+      var adv = (hosts.indexOf(team) >= 0 && team === f.country) ? wH * ha : 0;
+      return wA * S[team][0] - wD * S[oppo][1] + wV * sc * (vz[team] || 0) + adv;
+    }
+    var muH = Math.exp(logmu(f.home, f.away)), muA = Math.exp(logmu(f.away, f.home));
+    function pois(mu, k) { var p = Math.exp(-mu), t = p; for (var i = 1; i <= k; i++) t *= mu / i; return t; }
     var ph = [], pa = [], i, j;
     for (i = 0; i <= N; i++) { ph.push(pois(muH, i)); pa.push(pois(muA, i)); }
     var g = []; for (i = 0; i <= N; i++) { g.push([]); for (j = 0; j <= N; j++) g[i].push(ph[i] * pa[j]); }
@@ -215,10 +232,10 @@
     var tot = 0, h = 0, d = 0; for (i = 0; i <= N; i++) for (j = 0; j <= N; j++) { tot += g[i][j]; if (i > j) h += g[i][j]; else if (i === j) d += g[i][j]; }
     return { home: h / tot, draw: d / tot, away: 1 - (h + d) / tot, muH: muH, muA: muA };
   }
+  var EVEN_STATE = { att: 0, def: 0, home: 0, recency: 1, rho: 0, value: 0, attW: 0, defW: 0, homeW: 0, valueW: 0 };
 
   function simulator(sim) {
-    var fx = sim.fixtures, st = { preset: sim.meta.default_preset, valueOn: false, valueW: 0.5, homeOn: true, homeW: 1.0, i: 0 };
-    // default to a lopsided fixture so the knobs visibly bite
+    var fx = sim.fixtures, st = fullState();
     st.i = Math.max(0, fx.findIndex(function (f) { return f.home === "Spain" || f.away === "Spain"; }));
     var sel = d3.select("#sim-select");
     fx.forEach(function (f, k) {
@@ -226,37 +243,38 @@
       sel.append("option").attr("value", k).text(date + " · " + f.home + " v " + f.away);
     });
     sel.property("value", st.i).on("change", function () { st.i = +this.value; render(); });
-    // decay segmented control
-    var seg = d3.select("#sim-decay");
-    sim.decay_presets.forEach(function (p) {
-      seg.append("button").attr("class", p.key === st.preset ? "on" : "").text(p.label.split(" · ")[0])
-        .attr("title", p.label).on("click", function () { st.preset = p.key; seg.selectAll("button").classed("on", false); d3.select(this).classed("on", true); render(); });
-    });
-    // toggles + sliders
-    function wire(tog, sld, lbl, onKey, wKey, fmt) {
-      d3.select(tog).on("click", function () { st[onKey] = !st[onKey]; render(); });
-      d3.select(sld).on("input", function () { st[wKey] = +this.value / (wKey === "homeW" ? 100 : 100); render(); });
+
+    function buildKnob(parent, kn) {
+      var box = parent.append("div").attr("class", "sim-knob").attr("id", "k-" + kn.key);
+      var row = box.append("div").attr("class", "sim-krow");
+      row.append("div").attr("class", "sim-klabel").html(kn.label + "<small>" + kn.sub + "</small>");
+      row.append("button").attr("class", "sim-toggle").attr("aria-label", "toggle " + kn.label)
+        .on("click", function () { st[kn.key] = st[kn.key] ? 0 : 1; render(); });
+      if (kn.slider) {
+        box.append("input").attr("type", "range").attr("class", "sim-slider").attr("id", "s-" + kn.key)
+          .attr("min", 0).attr("max", kn.max || 100).attr("value", sliderInit(kn.key))
+          .on("input", function () { st[kn.key + "W"] = +this.value / 100; st[kn.key] = 1; render(); });
+        var ends = kn.ends || ["off", "full weight"];
+        var er = box.append("div").attr("class", "sim-krow");
+        er.append("span").style("font-size", "11px").style("color", "var(--muted)").text(ends[0]);
+        er.append("span").attr("class", "sim-svalue").attr("id", "v-" + kn.key);
+        er.append("span").style("font-size", "11px").style("color", "var(--muted)").text(ends[1]);
+      }
     }
-    wire("#t-value", "#s-value", "#v-value", "valueOn", "valueW");
-    wire("#t-home", "#s-home", "#v-home", "homeOn", "homeW");
+    KNOBS.forEach(function (kn) { buildKnob(d3.select(kn.group === "extra" ? "#sim-extra" : "#sim-base"), kn); });
     d3.select("#sim-reset").on("click", function () {
-      st.preset = sim.meta.default_preset; st.valueOn = false; st.valueW = 0.5; st.homeOn = true; st.homeW = 1.0;
-      d3.select("#s-value").property("value", 50); d3.select("#s-home").property("value", 100);
-      seg.selectAll("button").classed("on", function (d, idx) { return sim.decay_presets[idx].key === st.preset; });
+      var f = fullState(); Object.keys(f).forEach(function (k) { st[k] = f[k]; });
+      KNOBS.forEach(function (kn) { if (kn.slider) d3.select("#s-" + kn.key).property("value", sliderInit(kn.key)); });
       render();
     });
 
     function render() {
-      var f = fx[st.i], pre = sim.decay_presets.find(function (p) { return p.key === st.preset; });
-      var wv = st.valueOn ? st.valueW : 0, wh = st.homeOn ? st.homeW : 0;
-      var cur = dcOneXtwo(pre, sim, f.home, f.away, f.country, wv, wh);
-      var defp = sim.decay_presets.find(function (p) { return p.key === sim.meta.default_preset; });
-      var base = dcOneXtwo(defp, sim, f.home, f.away, f.country, 0, 1);
-      // reflect knob states in DOM
-      d3.select("#k-value").classed("off", !st.valueOn); d3.select("#t-value").classed("on", st.valueOn);
-      d3.select("#k-home").classed("off", !st.homeOn); d3.select("#t-home").classed("on", st.homeOn);
-      d3.select("#v-value").text(Math.round(st.valueW * 100) + "%");
-      d3.select("#v-home").text(Math.round(st.homeW * 100) + "%");
+      var f = fx[st.i], cur = simRecompute(sim, st, f), even = simRecompute(sim, EVEN_STATE, f);
+      KNOBS.forEach(function (kn) {
+        var on = !!st[kn.key];
+        var k = d3.select("#k-" + kn.key); k.classed("off", !on); k.select(".sim-toggle").classed("on", on);
+        if (kn.slider) d3.select("#v-" + kn.key).text(Math.round(st[kn.key + "W"] * 100) + "%");
+      });
       d3.select("#sim-matchup").text(f.home + "  vs  " + f.away);
       if (!cur) { d3.select("#sim-1x2").html("<div style='padding:8px;color:var(--muted)'>No rating for one of these teams.</div>"); d3.select("#sim-1x2lbl").html(""); d3.select("#sim-delta").html(""); return; }
       var bar = d3.select("#sim-1x2"); bar.html("");
@@ -264,12 +282,15 @@
         bar.append("div").attr("class", x[0]).style("width", (100 * x[1]) + "%").text(x[1] >= 0.08 ? pct(x[1]) : "");
       });
       d3.select("#sim-1x2lbl").html("<span>" + f.home + " win</span><span>draw</span><span>" + f.away + " win</span>");
-      // delta vs the model's published default
+      var full = st.att && st.def && st.home && st.recency && st.rho && !st.value && st.attW === 1 && st.defW === 1 && st.homeW === 1;
+      var nOn = ["att", "def", "home", "recency", "rho"].filter(function (k) { return st[k]; }).length;
+      var label = full ? "▲ the published model"
+        : (nOn === 0 && !st.value) ? "a dead heat — every ingredient off"
+        : nOn + " of 5 model ingredients on" + (st.value ? " + squad value" : "");
       function dlt(c, b) { var d = Math.round((c - b) * 100); return d === 0 ? "±0" : (d > 0 ? "<b class='up'>+" + d + "</b>" : "<b class='dn'>" + d + "</b>"); }
-      var changed = st.valueOn || st.homeW !== 1 || !st.homeOn || st.preset !== sim.meta.default_preset;
-      d3.select("#sim-delta").html(changed
-        ? "vs the model's default — " + f.home + " " + dlt(cur.home, base.home) + ", draw " + dlt(cur.draw, base.draw) + ", " + f.away + " " + dlt(cur.away, base.away) + " pts &nbsp;·&nbsp; xG " + cur.muH.toFixed(2) + "–" + cur.muA.toFixed(2)
-        : "these are the model's default settings — matching the frozen forecast above");
+      d3.select("#sim-delta").html("<div style='font-weight:600;color:var(--ink);margin-bottom:3px'>" + label + "</div>" +
+        "vs an even coin-flip — " + f.home + " " + dlt(cur.home, even.home) + ", draw " + dlt(cur.draw, even.draw) + ", " + f.away + " " + dlt(cur.away, even.away) +
+        " &nbsp;·&nbsp; xG " + cur.muH.toFixed(2) + "–" + cur.muA.toFixed(2));
     }
     render();
   }

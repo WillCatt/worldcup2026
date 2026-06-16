@@ -60,6 +60,9 @@
 
     /* parameter simulator */
     .sim-wrap { max-width: 580px; margin: 0 auto; }
+    .sim-intro { font-size: 13.5px; color: #443e38; margin: 0 0 14px; }
+    .sim-grouplbl { font-family: "JetBrains Mono", monospace; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 14px 2px 8px; }
+    .sim-grouplbl span { text-transform: none; letter-spacing: 0; opacity: .8; }
     .sim-knob { border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; margin-bottom: 10px; background: var(--panel); transition: opacity .15s; }
     .sim-knob.off { opacity: .5; }
     .sim-krow { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -154,45 +157,26 @@
       <div class="chart-wrap narrow">
         <div class="sim-wrap" id="sim">
           <div class="fc-pick"><select id="sim-select" style="max-width:100%"></select></div>
-
-          <div class="sim-knob" id="k-decay">
-            <div class="sim-krow"><div class="sim-klabel">Recent form
-              <small>how fast old results lose weight — the model's time-decay, genuinely refit at each setting</small></div></div>
-            <div class="sim-seg" id="sim-decay"></div>
-          </div>
-
-          <div class="sim-knob on" id="k-value">
-            <div class="sim-krow"><div class="sim-klabel">Squad value
-              <small>blend in financial strength from Transfermarkt market values</small></div>
-              <button class="sim-toggle on" id="t-value" aria-label="toggle squad value"></button></div>
-            <input type="range" class="sim-slider" id="s-value" min="0" max="100" value="50" />
-            <div class="sim-krow"><span style="font-size:11px;color:var(--muted)">no effect</span>
-              <span class="sim-svalue" id="v-value">50%</span>
-              <span style="font-size:11px;color:var(--muted)">full weight</span></div>
-          </div>
-
-          <div class="sim-knob on" id="k-home">
-            <div class="sim-krow"><div class="sim-klabel">Home / host advantage
-              <small>the fitted venue edge — applies to host nations playing in their own country</small></div>
-              <button class="sim-toggle on" id="t-home" aria-label="toggle home advantage"></button></div>
-            <input type="range" class="sim-slider" id="s-home" min="0" max="150" value="100" />
-            <div class="sim-krow"><span style="font-size:11px;color:var(--muted)">none</span>
-              <span class="sim-svalue" id="v-home">100%</span>
-              <span style="font-size:11px;color:var(--muted)">1.5× fitted</span></div>
-          </div>
-
+          <p class="sim-intro">Everything the baseline odds are built from is listed below. Switch an
+            ingredient off, or slide its weight. Turn them <em>all</em> off and the match falls to a dead
+            heat — no side has an edge; turn them all on and you're back to the published model.</p>
+          <div class="sim-grouplbl">What the model uses</div>
+          <div id="sim-base"></div>
+          <div class="sim-grouplbl">Extra factor <span>· not in the published model</span></div>
+          <div id="sim-extra"></div>
           <div class="sim-out">
             <div class="sim-matchup" id="sim-matchup">—</div>
             <div class="fc-1x2" id="sim-1x2"></div>
             <div class="fc-1x2lbl" id="sim-1x2lbl"></div>
             <div class="sim-delta" id="sim-delta"></div>
-            <div style="text-align:center"><button class="sim-reset" id="sim-reset">↺ reset to the model's defaults</button></div>
+            <div style="text-align:center"><button class="sim-reset" id="sim-reset">↺ reset to the full model</button></div>
           </div>
         </div>
-        <p class="caption">Decay settings are <em>separate refits</em> of the model (5 shipped); squad-value
-          and home advantage recompute instantly in your browser with the exact Dixon-Coles math. The
-          manager factor is deliberately absent — there's no clean free data for it, and a fabricated
-          coefficient would defeat the point.</p>
+        <p class="caption">Each ingredient is a real term in the Dixon-Coles model — attacking and defensive
+          strength, the fitted home/host edge, whether recent results are weighted more heavily, and the
+          low-score draw correction. Strengths come from genuine refits; everything recomputes live with
+          the exact model math. Manager is deliberately absent — no clean free data, and a fabricated term
+          would defeat the point.</p>
       </div>
       <p class="pen-take">A model is a stack of assumptions. The honest move isn't to hide them — it's to hand you the dials.</p>
     </section>
