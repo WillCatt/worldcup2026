@@ -57,6 +57,27 @@
     table.fc-log .tick { color: #1f6d6d; } table.fc-log .cross { color: #a23c28; }
     .fc-warn { background: rgba(176,106,22,.07); border: 1px solid rgba(176,106,22,.28); border-radius: 12px; padding: 12px 15px; margin: 0 auto 16px; max-width: 600px; font-size: 13.5px; }
     .pen-take { border-left: 3px solid var(--amber); padding-left: 16px; margin: 22px 0 0; font-size: 19px; font-weight: 600; line-height: 1.35; letter-spacing: -.01em; }
+
+    /* parameter simulator */
+    .sim-wrap { max-width: 580px; margin: 0 auto; }
+    .sim-knob { border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; margin-bottom: 10px; background: var(--panel); transition: opacity .15s; }
+    .sim-knob.off { opacity: .5; }
+    .sim-krow { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .sim-klabel { font-weight: 600; font-size: 14px; } .sim-klabel small { display: block; font-weight: 400; font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+    .sim-toggle { position: relative; width: 42px; height: 24px; border-radius: 999px; border: none; background: #d8cdbd; cursor: pointer; flex: none; transition: background .15s; }
+    .sim-toggle.on { background: var(--amber); }
+    .sim-toggle::after { content: ""; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .15s; }
+    .sim-toggle.on::after { transform: translateX(18px); }
+    .sim-slider { width: 100%; margin: 11px 0 1px; accent-color: var(--amber); }
+    .sim-seg { display: flex; gap: 4px; margin-top: 10px; flex-wrap: wrap; }
+    .sim-seg button { font-family: "JetBrains Mono", monospace; font-size: 11px; padding: 6px 9px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); border-radius: 7px; cursor: pointer; }
+    .sim-seg button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+    .sim-svalue { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--amber); }
+    .sim-out { border: 1px solid rgba(176,106,22,.3); border-radius: 12px; padding: 16px; margin-top: 4px; background: rgba(176,106,22,.04); }
+    .sim-matchup { text-align: center; font-weight: 600; font-size: 15px; margin-bottom: 12px; }
+    .sim-delta { font-family: "JetBrains Mono", monospace; font-size: 11.5px; color: var(--muted); margin-top: 8px; text-align: center; min-height: 1.3em; }
+    .sim-delta b.up { color: #1f6d6d; } .sim-delta b.dn { color: #a23c28; }
+    .sim-reset { font-family: "JetBrains Mono", monospace; font-size: 11.5px; background: none; border: none; color: var(--muted); cursor: pointer; text-decoration: underline; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -119,6 +140,61 @@
         <th>Date</th><th>Match</th><th>Model</th><th class="r">W/D/L</th><th class="r">Actual</th><th class="r">✓</th>
       </tr></thead><tbody></tbody></table></div>
       <p class="pen-take" id="fc-take">—</p>
+    </section>
+
+    <!-- ════════ PART III ════════ -->
+    <div class="part"><span class="part-no">Part III</span><h2 class="part-title">Tune the model</h2></div>
+    <section class="block">
+      <div class="block-head">
+        <h3>What if it weighed things differently?</h3>
+        <p class="sub">The same Dixon-Coles engine, with its dials exposed. Turn each factor on or
+          off, slide its weight, and watch a match's odds move — recomputed live from the genuinely
+          fitted strengths, not a mockup. Every number is real model output.</p>
+      </div>
+      <div class="chart-wrap narrow">
+        <div class="sim-wrap" id="sim">
+          <div class="fc-pick"><select id="sim-select" style="max-width:100%"></select></div>
+
+          <div class="sim-knob" id="k-decay">
+            <div class="sim-krow"><div class="sim-klabel">Recent form
+              <small>how fast old results lose weight — the model's time-decay, genuinely refit at each setting</small></div></div>
+            <div class="sim-seg" id="sim-decay"></div>
+          </div>
+
+          <div class="sim-knob on" id="k-value">
+            <div class="sim-krow"><div class="sim-klabel">Squad value
+              <small>blend in financial strength from Transfermarkt market values</small></div>
+              <button class="sim-toggle on" id="t-value" aria-label="toggle squad value"></button></div>
+            <input type="range" class="sim-slider" id="s-value" min="0" max="100" value="50" />
+            <div class="sim-krow"><span style="font-size:11px;color:var(--muted)">no effect</span>
+              <span class="sim-svalue" id="v-value">50%</span>
+              <span style="font-size:11px;color:var(--muted)">full weight</span></div>
+          </div>
+
+          <div class="sim-knob on" id="k-home">
+            <div class="sim-krow"><div class="sim-klabel">Home / host advantage
+              <small>the fitted venue edge — applies to host nations playing in their own country</small></div>
+              <button class="sim-toggle on" id="t-home" aria-label="toggle home advantage"></button></div>
+            <input type="range" class="sim-slider" id="s-home" min="0" max="150" value="100" />
+            <div class="sim-krow"><span style="font-size:11px;color:var(--muted)">none</span>
+              <span class="sim-svalue" id="v-home">100%</span>
+              <span style="font-size:11px;color:var(--muted)">1.5× fitted</span></div>
+          </div>
+
+          <div class="sim-out">
+            <div class="sim-matchup" id="sim-matchup">—</div>
+            <div class="fc-1x2" id="sim-1x2"></div>
+            <div class="fc-1x2lbl" id="sim-1x2lbl"></div>
+            <div class="sim-delta" id="sim-delta"></div>
+            <div style="text-align:center"><button class="sim-reset" id="sim-reset">↺ reset to the model's defaults</button></div>
+          </div>
+        </div>
+        <p class="caption">Decay settings are <em>separate refits</em> of the model (5 shipped); squad-value
+          and home advantage recompute instantly in your browser with the exact Dixon-Coles math. The
+          manager factor is deliberately absent — there's no clean free data for it, and a fabricated
+          coefficient would defeat the point.</p>
+      </div>
+      <p class="pen-take">A model is a stack of assumptions. The honest move isn't to hide them — it's to hand you the dials.</p>
     </section>
 
     <section class="findings" id="findings"><!-- filled --></section>

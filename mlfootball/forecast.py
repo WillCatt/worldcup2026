@@ -208,6 +208,92 @@ def export(path: Path | None = None) -> dict:
     return out
 
 
+# ── parameter simulator ───────────────────────────────────────────────────────
+# Ship genuinely-refit strengths at several decay settings + a market-value rating,
+# so the browser can recompute true Dixon-Coles odds live as the user turns factors
+# on/off and reweights them. No mockups: every knob produces real model output.
+import math  # noqa: E402
+
+DECAY_PRESETS = [  # (key, label, half-life in days; 0 = no decay)
+    ("equal", "All history weighted equally", 0.0),
+    ("slow", "Slow fade · 4-year half-life", math.log(2) / 1460),
+    ("default", "Default · 2-year half-life", float(ratings.DEFAULT_XI)),
+    ("fast", "Recent-leaning · 1-year half-life", math.log(2) / 365),
+    ("hot", "Recent form only · 6-month half-life", math.log(2) / 183),
+]
+VALUE_SCALE = 0.15   # strength units per 1 SD of log market value, at full weight
+SIM_MAX_GOALS = 8
+
+
+def _value_z() -> dict[str, float]:
+    """z-score of log(squad market value), keyed by model team name."""
+    sv = json.loads((ROOT / "site" / "data" / "squad_value.json").read_text())
+    vals = {n: v["squad_value"] for n, v in sv["nations"].items() if v["squad_value"]}
+    logs = {n: math.log(v) for n, v in vals.items()}
+    mu = sum(logs.values()) / len(logs)
+    sd = (sum((x - mu) ** 2 for x in logs.values()) / len(logs)) ** 0.5
+    return {n: round((x - mu) / sd, 4) for n, x in logs.items()}
+
+
+def simulator_export(path: Path | None = None) -> dict:
+    df = data.load()
+    fx = fixtures()
+    wc_teams = sorted({t for f in fx for t in (f["home"], f["away"])})
+    presets = []
+    for key, label, xi in DECAY_PRESETS:
+        s = ratings.fit(df, xi=xi, asof=ASOF)
+        presets.append({
+            "key": key, "label": label,
+            "half_life_days": round(math.log(2) / xi) if xi else None,
+            "rho": round(s.rho, 5), "home_adv": round(s.home_adv, 5),
+            "strengths": {t: [round(s.attack[t], 4), round(s.defence[t], 4)]
+                          for t in wc_teams if t in s.attack},
+        })
+    out = {
+        "meta": {"asof": ASOF.strftime("%Y-%m-%d"), "value_scale": VALUE_SCALE,
+                 "max_goals": SIM_MAX_GOALS, "default_preset": "default"},
+        "decay_presets": presets,
+        "value_z": {t: z for t, z in _value_z().items() if t in wc_teams},
+        "hosts": sorted(HOST_COUNTRIES),
+        "fixtures": [{"date": f["date"], "group": f["group"], "home": f["home"],
+                      "away": f["away"], "country": f["country"]} for f in fx],
+    }
+    path = path or ROOT / "site" / "data" / "simulator.json"
+    path.write_text(json.dumps(out, indent=2, ensure_ascii=False))
+    return out
+
+
+def sim_recompute(sim: dict, preset_key: str, home: str, away: str, country: str,
+                  w_value: float = 0.0, w_home: float = 1.0) -> dict:
+    """Python mirror of the browser recompute — used to prove the JS will be faithful.
+    Returns 1X2 under the chosen knobs."""
+    pre = next(p for p in sim["decay_presets"] if p["key"] == preset_key)
+    S, vz, sc = pre["strengths"], sim["value_z"], sim["meta"]["value_scale"]
+    rho, ha, hosts = pre["rho"], pre["home_adv"], set(sim["hosts"])
+
+    def adj(team):
+        a, d = S[team]
+        bump = w_value * sc * vz.get(team, 0.0)
+        return a + bump, d + bump
+    ah, dh = adj(home); aa, da = adj(away)
+    adv_h = ha * w_home if (home in hosts and home == country) else 0.0
+    adv_a = ha * w_home if (away in hosts and away == country) else 0.0
+    mu_h, mu_a = math.exp(ah - da + adv_h), math.exp(aa - dh + adv_a)
+    N = sim["meta"]["max_goals"]
+    ph = [math.exp(-mu_h) * mu_h ** i / math.factorial(i) for i in range(N + 1)]
+    pa = [math.exp(-mu_a) * mu_a ** j / math.factorial(j) for j in range(N + 1)]
+    g = [[ph[i] * pa[j] for j in range(N + 1)] for i in range(N + 1)]
+    g[0][0] *= 1 - mu_h * mu_a * rho
+    g[0][1] *= 1 + mu_h * rho
+    g[1][0] *= 1 + mu_a * rho
+    g[1][1] *= 1 - rho
+    tot = sum(sum(r) for r in g)
+    home_p = sum(g[i][j] for i in range(N + 1) for j in range(N + 1) if i > j) / tot
+    draw_p = sum(g[i][i] for i in range(N + 1)) / tot
+    return {"home": round(home_p, 4), "draw": round(draw_p, 4),
+            "away": round(1 - home_p - draw_p, 4)}
+
+
 if __name__ == "__main__":
     d = export()
     m, sc = d["meta"], d["scorecard"]

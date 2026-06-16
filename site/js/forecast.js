@@ -197,10 +197,89 @@
     ].forEach(function (c) { var a = f.append("article"); a.append("h3").text(c.h); a.append("p").html(c.p); });
   }
 
+  // ── Part III: parameter simulator (real Dixon-Coles recompute, live) ──────
+  function dcOneXtwo(pre, sim, home, away, country, wv, wh) {
+    var S = pre.strengths, vz = sim.value_z, sc = sim.meta.value_scale, N = sim.meta.max_goals;
+    var hosts = sim.hosts, rho = pre.rho, ha = pre.home_adv;
+    if (!S[home] || !S[away]) return null;
+    function adj(t) { var b = wv * sc * (vz[t] || 0); return [S[t][0] + b, S[t][1] + b]; }
+    var ah = adj(home), aa = adj(away);
+    var advH = (hosts.indexOf(home) >= 0 && home === country) ? ha * wh : 0;
+    var advA = (hosts.indexOf(away) >= 0 && away === country) ? ha * wh : 0;
+    var muH = Math.exp(ah[0] - aa[1] + advH), muA = Math.exp(aa[0] - ah[1] + advA);
+    function pois(mu, k) { var p = Math.exp(-mu), t = p; for (var i = 1; i <= k; i++) { t *= mu / i; } return t; }
+    var ph = [], pa = [], i, j;
+    for (i = 0; i <= N; i++) { ph.push(pois(muH, i)); pa.push(pois(muA, i)); }
+    var g = []; for (i = 0; i <= N; i++) { g.push([]); for (j = 0; j <= N; j++) g[i].push(ph[i] * pa[j]); }
+    g[0][0] *= 1 - muH * muA * rho; g[0][1] *= 1 + muH * rho; g[1][0] *= 1 + muA * rho; g[1][1] *= 1 - rho;
+    var tot = 0, h = 0, d = 0; for (i = 0; i <= N; i++) for (j = 0; j <= N; j++) { tot += g[i][j]; if (i > j) h += g[i][j]; else if (i === j) d += g[i][j]; }
+    return { home: h / tot, draw: d / tot, away: 1 - (h + d) / tot, muH: muH, muA: muA };
+  }
+
+  function simulator(sim) {
+    var fx = sim.fixtures, st = { preset: sim.meta.default_preset, valueOn: false, valueW: 0.5, homeOn: true, homeW: 1.0, i: 0 };
+    // default to a lopsided fixture so the knobs visibly bite
+    st.i = Math.max(0, fx.findIndex(function (f) { return f.home === "Spain" || f.away === "Spain"; }));
+    var sel = d3.select("#sim-select");
+    fx.forEach(function (f, k) {
+      var date = new Date(f.date + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
+      sel.append("option").attr("value", k).text(date + " · " + f.home + " v " + f.away);
+    });
+    sel.property("value", st.i).on("change", function () { st.i = +this.value; render(); });
+    // decay segmented control
+    var seg = d3.select("#sim-decay");
+    sim.decay_presets.forEach(function (p) {
+      seg.append("button").attr("class", p.key === st.preset ? "on" : "").text(p.label.split(" · ")[0])
+        .attr("title", p.label).on("click", function () { st.preset = p.key; seg.selectAll("button").classed("on", false); d3.select(this).classed("on", true); render(); });
+    });
+    // toggles + sliders
+    function wire(tog, sld, lbl, onKey, wKey, fmt) {
+      d3.select(tog).on("click", function () { st[onKey] = !st[onKey]; render(); });
+      d3.select(sld).on("input", function () { st[wKey] = +this.value / (wKey === "homeW" ? 100 : 100); render(); });
+    }
+    wire("#t-value", "#s-value", "#v-value", "valueOn", "valueW");
+    wire("#t-home", "#s-home", "#v-home", "homeOn", "homeW");
+    d3.select("#sim-reset").on("click", function () {
+      st.preset = sim.meta.default_preset; st.valueOn = false; st.valueW = 0.5; st.homeOn = true; st.homeW = 1.0;
+      d3.select("#s-value").property("value", 50); d3.select("#s-home").property("value", 100);
+      seg.selectAll("button").classed("on", function (d, idx) { return sim.decay_presets[idx].key === st.preset; });
+      render();
+    });
+
+    function render() {
+      var f = fx[st.i], pre = sim.decay_presets.find(function (p) { return p.key === st.preset; });
+      var wv = st.valueOn ? st.valueW : 0, wh = st.homeOn ? st.homeW : 0;
+      var cur = dcOneXtwo(pre, sim, f.home, f.away, f.country, wv, wh);
+      var defp = sim.decay_presets.find(function (p) { return p.key === sim.meta.default_preset; });
+      var base = dcOneXtwo(defp, sim, f.home, f.away, f.country, 0, 1);
+      // reflect knob states in DOM
+      d3.select("#k-value").classed("off", !st.valueOn); d3.select("#t-value").classed("on", st.valueOn);
+      d3.select("#k-home").classed("off", !st.homeOn); d3.select("#t-home").classed("on", st.homeOn);
+      d3.select("#v-value").text(Math.round(st.valueW * 100) + "%");
+      d3.select("#v-home").text(Math.round(st.homeW * 100) + "%");
+      d3.select("#sim-matchup").text(f.home + "  vs  " + f.away);
+      if (!cur) { d3.select("#sim-1x2").html("<div style='padding:8px;color:var(--muted)'>No rating for one of these teams.</div>"); d3.select("#sim-1x2lbl").html(""); d3.select("#sim-delta").html(""); return; }
+      var bar = d3.select("#sim-1x2"); bar.html("");
+      [["h", cur.home], ["d", cur.draw], ["a", cur.away]].forEach(function (x) {
+        bar.append("div").attr("class", x[0]).style("width", (100 * x[1]) + "%").text(x[1] >= 0.08 ? pct(x[1]) : "");
+      });
+      d3.select("#sim-1x2lbl").html("<span>" + f.home + " win</span><span>draw</span><span>" + f.away + " win</span>");
+      // delta vs the model's published default
+      function dlt(c, b) { var d = Math.round((c - b) * 100); return d === 0 ? "±0" : (d > 0 ? "<b class='up'>+" + d + "</b>" : "<b class='dn'>" + d + "</b>"); }
+      var changed = st.valueOn || st.homeW !== 1 || !st.homeOn || st.preset !== sim.meta.default_preset;
+      d3.select("#sim-delta").html(changed
+        ? "vs the model's default — " + f.home + " " + dlt(cur.home, base.home) + ", draw " + dlt(cur.draw, base.draw) + ", " + f.away + " " + dlt(cur.away, base.away) + " pts &nbsp;·&nbsp; xG " + cur.muH.toFixed(2) + "–" + cur.muA.toFixed(2)
+        : "these are the model's default settings — matching the frozen forecast above");
+    }
+    render();
+  }
+
   function boot() {
-    d3.json("../data/forecast.json").then(function (B) {
+    Promise.all([d3.json("../data/forecast.json"), d3.json("../data/simulator.json").catch(function () { return null; })]).then(function (r) {
+      var B = r[0], sim = r[1];
       document.querySelectorAll("[data-fc]").forEach(function (e) { if (B.meta[e.getAttribute("data-fc")] != null) e.textContent = B.meta[e.getAttribute("data-fc")]; });
       fillStats(B); picker(B); scorecard(B); calibration(B); logTable(B); findings(B);
+      if (sim) simulator(sim); else d3.select("#sim").html("<p style='color:var(--muted)'>Simulator data unavailable.</p>");
     }).catch(function (e) {
       d3.select("#stats").html("<p style='color:var(--muted)'>Couldn't load the forecast bundle.</p>");
       console.error("forecast:", e);
