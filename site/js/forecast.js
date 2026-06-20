@@ -13,6 +13,11 @@
     return i >= n ? HEAT[n] : d3.interpolateRgb(HEAT[i], HEAT[i + 1])(f);
   }
   var OUT = { home: "home win", draw: "draw", away: "away win" };
+  // chronological fixture order (ISO dates sort lexically); stable tiebreak by group+home
+  var byDate = function (a, b) {
+    return a.date < b.date ? -1 : a.date > b.date ? 1
+      : ((a.group || "") + a.home).localeCompare((b.group || "") + b.home);
+  };
 
   function fillStats(B) {
     var sc = B.scorecard, s = d3.select("#stats");
@@ -28,7 +33,7 @@
 
   // ── Part I: fixture picker + card ────────────────────────────────────────
   function picker(B) {
-    var fx = B.fixtures.filter(function (f) { return f.known; });
+    var fx = B.fixtures.filter(function (f) { return f.known; }).sort(byDate);
     var sel = d3.select("#fc-select"), i = 0;
     fx.forEach(function (f, k) {
       var date = new Date(f.date + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
@@ -235,7 +240,7 @@
   var EVEN_STATE = { att: 0, def: 0, home: 0, recency: 1, rho: 0, value: 0, attW: 0, defW: 0, homeW: 0, valueW: 0 };
 
   function simulator(sim) {
-    var fx = sim.fixtures, st = fullState();
+    var fx = sim.fixtures.slice().sort(byDate), st = fullState();
     st.i = Math.max(0, fx.findIndex(function (f) { return f.home === "Spain" || f.away === "Spain"; }));
     var sel = d3.select("#sim-select");
     fx.forEach(function (f, k) {

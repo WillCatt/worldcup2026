@@ -1,0 +1,363 @@
+{
+  "meta": {
+    "n_qualified": 48,
+    "n_ranked": 211,
+    "n_missed_featured": 20,
+    "top_miss": "Italy",
+    "note": "Strongest non-qualifiers by FIFA world-ranking position. Value and points are from Transfermarkt's world-ranking pages; Elo is built over the full martj42 international history, snapshot 2026-06-10; World Cup pedigree is a hand-checked reference."
+  },
+  "missed": [
+    {
+      "name": "Italy",
+      "model": "Italy",
+      "code": "",
+      "flag": "🇮🇹",
+      "fifa_rank": 12,
+      "fifa_points": 1705.0,
+      "confed": "UEFA",
+      "value_eur": 315700000,
+      "elo": 1871.0,
+      "last_wc": 2014,
+      "best_finish": "Winners ×4",
+      "titles": 4,
+      "note": "4-time world champions — a third straight World Cup missed."
+    },
+    {
+      "name": "Denmark",
+      "model": "Denmark",
+      "code": "",
+      "flag": "🇩🇰",
+      "fifa_rank": 21,
+      "fifa_points": 1619.0,
+      "confed": "UEFA",
+      "value_eur": 365000000,
+      "elo": 1839.0,
+      "last_wc": 2022,
+      "best_finish": "Quarter-finals (1998)",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Nigeria",
+      "model": "Nigeria",
+      "code": "",
+      "flag": "🇳🇬",
+      "fifa_rank": 26,
+      "fifa_points": 1585.0,
+      "confed": "CAF",
+      "value_eur": 172050000,
+      "elo": 1766.0,
+      "last_wc": 2018,
+      "best_finish": "Round of 16",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Ukraine",
+      "model": "Ukraine",
+      "code": "",
+      "flag": "🇺🇦",
+      "fifa_rank": 32,
+      "fifa_points": 1549.0,
+      "confed": "UEFA",
+      "value_eur": 247000000,
+      "elo": 1804.0,
+      "last_wc": 2006,
+      "best_finish": "Quarter-finals (2006)",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Russia",
+      "model": "Russia",
+      "code": "",
+      "flag": "🇷🇺",
+      "fifa_rank": 35,
+      "fifa_points": 1530.0,
+      "confed": "UEFA",
+      "value_eur": 242700000,
+      "elo": 1762.0,
+      "last_wc": 2018,
+      "best_finish": "Fourth (1966, as USSR)",
+      "titles": 0,
+      "note": "Suspended from international football."
+    },
+    {
+      "name": "Poland",
+      "model": "Poland",
+      "code": "",
+      "flag": "🇵🇱",
+      "fifa_rank": 36,
+      "fifa_points": 1526.0,
+      "confed": "UEFA",
+      "value_eur": 231600000,
+      "elo": 1736.0,
+      "last_wc": 2022,
+      "best_finish": "Third ×2 (1974, 1982)",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Wales",
+      "model": "Wales",
+      "code": "",
+      "flag": "🏴󠁧󠁢󠁷󠁬󠁳󠁿",
+      "fifa_rank": 37,
+      "fifa_points": 1517.0,
+      "confed": "UEFA",
+      "value_eur": 180650000,
+      "elo": 1699.0,
+      "last_wc": 2022,
+      "best_finish": "Quarter-finals (1958)",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Hungary",
+      "model": "Hungary",
+      "code": "",
+      "flag": "🇭🇺",
+      "fifa_rank": 39,
+      "fifa_points": 1506.0,
+      "confed": "UEFA",
+      "value_eur": 209200000,
+      "elo": 1728.0,
+      "last_wc": 1986,
+      "best_finish": "Runners-up ×2",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Serbia",
+      "model": "Serbia",
+      "code": "",
+      "flag": "🇷🇸",
+      "fifa_rank": 43,
+      "fifa_points": 1502.0,
+      "confed": "UEFA",
+      "value_eur": 209500000,
+      "elo": 1754.0,
+      "last_wc": 2022,
+      "best_finish": "Group stage (best as Serbia)",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Cameroon",
+      "model": "Cameroon",
+      "code": "",
+      "flag": "🇨🇲",
+      "fifa_rank": 44,
+      "fifa_points": 1481.0,
+      "confed": "CAF",
+      "value_eur": 198700000,
+      "elo": 1662.0,
+      "last_wc": 2022,
+      "best_finish": "Quarter-finals (1990)",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Slovakia",
+      "model": "Slovakia",
+      "code": "",
+      "flag": "🇸🇰",
+      "fifa_rank": 47,
+      "fifa_points": 1474.0,
+      "confed": "UEFA",
+      "value_eur": 59850000,
+      "elo": 1679.0,
+      "last_wc": 2010,
+      "best_finish": "Round of 16 (2010)",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Greece",
+      "model": "Greece",
+      "code": "",
+      "flag": "🇬🇷",
+      "fifa_rank": 48,
+      "fifa_points": 1473.0,
+      "confed": "UEFA",
+      "value_eur": 275600000,
+      "elo": 1733.0,
+      "last_wc": 2014,
+      "best_finish": "Round of 16 (2014)",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Venezuela",
+      "model": "Venezuela",
+      "code": "",
+      "flag": "🇻🇪",
+      "fifa_rank": 49,
+      "fifa_points": 1469.0,
+      "confed": "CONMEBOL",
+      "value_eur": 79000000,
+      "elo": 1747.0,
+      "last_wc": "never",
+      "best_finish": "Never qualified",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Chile",
+      "model": "Chile",
+      "code": "",
+      "flag": "🇨🇱",
+      "fifa_rank": 51,
+      "fifa_points": 1458.0,
+      "confed": "CONMEBOL",
+      "value_eur": 66800000,
+      "elo": 1744.0,
+      "last_wc": 2014,
+      "best_finish": "Third (1962)",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Peru",
+      "model": "Peru",
+      "code": "",
+      "flag": "🇵🇪",
+      "fifa_rank": 52,
+      "fifa_points": 1458.0,
+      "confed": "CONMEBOL",
+      "value_eur": 30630000,
+      "elo": 1695.0,
+      "last_wc": 2018,
+      "best_finish": "Quarter-finals (1970)",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Costa Rica",
+      "model": "Costa Rica",
+      "code": "",
+      "flag": "🇨🇷",
+      "fifa_rank": 53,
+      "fifa_points": 1456.0,
+      "confed": "CONCACAF",
+      "value_eur": 28200000,
+      "elo": 1670.0,
+      "last_wc": 2022,
+      "best_finish": "Quarter-finals (2014)",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Romania",
+      "model": "Romania",
+      "code": "",
+      "flag": "🇷🇴",
+      "fifa_rank": 54,
+      "fifa_points": 1456.0,
+      "confed": "UEFA",
+      "value_eur": 56950000,
+      "elo": 1631.0,
+      "last_wc": 1998,
+      "best_finish": "Quarter-finals (1994)",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Mali",
+      "model": "Mali",
+      "code": "",
+      "flag": "🇲🇱",
+      "fifa_rank": 55,
+      "fifa_points": 1456.0,
+      "confed": "CAF",
+      "value_eur": 116550000,
+      "elo": 1664.0,
+      "last_wc": "never",
+      "best_finish": "Never qualified",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Republic of Ireland",
+      "model": "Republic of Ireland",
+      "code": "",
+      "flag": "🇮🇪",
+      "fifa_rank": 58,
+      "fifa_points": 1441.0,
+      "confed": "UEFA",
+      "value_eur": 146850000,
+      "elo": 1692.0,
+      "last_wc": 2002,
+      "best_finish": "Quarter-finals (1990)",
+      "titles": 0,
+      "note": null
+    },
+    {
+      "name": "Slovenia",
+      "model": "Slovenia",
+      "code": "",
+      "flag": "🇸🇮",
+      "fifa_rank": 59,
+      "fifa_points": 1441.0,
+      "confed": "UEFA",
+      "value_eur": 100500000,
+      "elo": 1727.0,
+      "last_wc": 2010,
+      "best_finish": "Group stage (2002, 2010)",
+      "titles": 0,
+      "note": null
+    }
+  ],
+  "weakest_qualified": [
+    {
+      "nation": "Jordan",
+      "flag": "🇯🇴",
+      "value_eur": 8150000
+    },
+    {
+      "nation": "Qatar",
+      "flag": "🇶🇦",
+      "value_eur": 18925000
+    },
+    {
+      "nation": "Iraq",
+      "flag": "🇮🇶",
+      "value_eur": 20050000
+    },
+    {
+      "nation": "Curaçao",
+      "flag": "🇨🇼",
+      "value_eur": 25775000
+    },
+    {
+      "nation": "Iran",
+      "flag": "🇮🇷",
+      "value_eur": 28450000
+    },
+    {
+      "nation": "New Zealand",
+      "flag": "🇳🇿",
+      "value_eur": 34350000
+    },
+    {
+      "nation": "Panama",
+      "flag": "🇵🇦",
+      "value_eur": 34550000
+    },
+    {
+      "nation": "Saudi Arabia",
+      "flag": "🇸🇦",
+      "value_eur": 38575000
+    }
+  ],
+  "sources": [
+    {
+      "label": "World ranking & squad values — Transfermarkt",
+      "url": "https://www.transfermarkt.com/statistik/weltrangliste"
+    },
+    {
+      "label": "Match history (Elo) — martj42 international results",
+      "url": "https://github.com/martj42/international_results"
+    }
+  ]
+}

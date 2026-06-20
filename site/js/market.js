@@ -22,6 +22,9 @@
       banner(); fresh(); stats();
       playable = data.matches.filter(function (m) {
         return m.model && m.market && m.market.sportsbet && m.market.sportsbet.length > 1;
+      }).sort(function (a, b) {
+        return (a.kickoff_utc || "") < (b.kickoff_utc || "") ? -1
+          : (a.kickoff_utc || "") > (b.kickoff_utc || "") ? 1 : 0;
       });
       // open on the most interesting settled match: largest |edge| (model vs closing)
       var settled = playable.filter(function (m) { return m.score; });
@@ -144,8 +147,7 @@
         mg = { t: 18, r: 92, b: 38, l: 46 };
     svg.attr("viewBox", "0 0 " + W + " " + H).attr("width", "100%").attr("height", H).html("");
     var iw = W - mg.l - mg.r, ih = H - mg.t - mg.b;
-    var g = svg.append("g").attr("transform", "t(" + mg.l + "," + mg.t + ")"
-      .replace("t(", "translate("));
+    var g = svg.append("g").attr("transform", "translate(" + mg.l + "," + mg.t + ")");
 
     var parse = function (s) { return new Date(s); };
     var ko = parse(m.kickoff_utc);

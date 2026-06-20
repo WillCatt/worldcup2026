@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Who Missed Out · ML in Football</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    /* ── sort controls ── */
+    .mo-sort { display: flex; gap: 8px; justify-content: center; margin: 0 auto 16px; flex-wrap: wrap; }
+    .mo-sort button { font-family: "JetBrains Mono", monospace; font-size: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 20px; padding: 5px 13px; cursor: pointer; }
+    .mo-sort button:hover { border-color: var(--amber); color: var(--amber); }
+    .mo-sort button.on { background: var(--amber); border-color: var(--amber); color: #fff; }
+
+    /* ── team rows ── */
+    .mo-list { max-width: 760px; margin: 0 auto; }
+    .mo-row { display: grid; grid-template-columns: 40px 1fr auto; gap: 14px; align-items: center; padding: 13px 16px; border: 1px solid var(--line); border-radius: 13px; background: var(--panel); margin-bottom: 9px; }
+    .mo-row.top { border-color: var(--amber); box-shadow: 0 2px 16px rgba(176,106,22,.10); }
+    .mo-rank { font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--muted); text-align: right; }
+    .mo-rank b { color: var(--amber); }
+    .mo-id { min-width: 0; }
+    .mo-name { font-size: 16.5px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .mo-name .flag { font-size: 20px; }
+    .mo-title { font-size: 10px; font-family: "JetBrains Mono", monospace; background: #f0e6d6; color: var(--amber); border-radius: 20px; padding: 1px 7px; letter-spacing: .03em; }
+    .mo-ped { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .mo-ped .note { color: #b06a16; }
+    .mo-stats { display: flex; gap: 18px; align-items: center; }
+    .mo-stat { text-align: right; }
+    .mo-stat .v { font-family: "JetBrains Mono", monospace; font-size: 14px; font-weight: 600; color: var(--ink); }
+    .mo-stat .k { font-size: 9.5px; font-family: "JetBrains Mono", monospace; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+    .mo-valbar { width: 96px; height: 7px; border-radius: 4px; background: #eee4d6; overflow: hidden; margin-top: 5px; }
+    .mo-valbar > div { height: 100%; background: var(--amber); }
+    @media (max-width: 620px) {
+      .mo-row { grid-template-columns: 32px 1fr; }
+      .mo-stats { grid-column: 1 / -1; justify-content: space-between; padding-left: 46px; }
+    }
+
+    /* ── comparison chart ── */
+    .mo-cmp { max-width: 760px; margin: 0 auto; }
+    .mo-bar { display: grid; grid-template-columns: 150px 1fr 78px; gap: 10px; align-items: center; margin-bottom: 6px; font-size: 13px; }
+    .mo-bar .lab { display: flex; align-items: center; gap: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mo-bar .lab .flag { font-size: 15px; }
+    .mo-bar .track { height: 18px; background: #f4ece0; border-radius: 5px; overflow: hidden; }
+    .mo-bar .fill { height: 100%; border-radius: 5px; }
+    .mo-bar.missed .fill { background: var(--amber); }
+    .mo-bar.qual .fill { background: var(--accent); }
+    .mo-bar .amt { font-family: "JetBrains Mono", monospace; font-size: 12px; color: #443e38; text-align: right; }
+    .mo-leg { display: flex; gap: 18px; justify-content: center; font-size: 12px; color: var(--muted); margin: 14px 0 4px; }
+    .mo-leg span { display: inline-flex; align-items: center; gap: 6px; }
+    .mo-leg i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+    .mo-leg .m { background: var(--amber); } .mo-leg .q { background: var(--accent); }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back-link" href="../index.html">← All explorations</a>
+    <header class="hero">
+      <p class="eyebrow">Machine Learning in Football · 10</p>
+      <h1>Who missed out</h1>
+      <p class="lede">Forty-eight places — the biggest World Cup ever — and still some heavyweights are
+        watching from home. Here are the strongest absentees, ranked on what they're worth, how good
+        the numbers say they are, and what they've done before. <em>Italy, four-time world champions,
+        sit at the top.</em></p>
+    </header>
+
+    <section class="stats" id="stats"><!-- filled --></section>
+
+    <div class="part"><span class="part-no">Part I</span><h2 class="part-title">The strongest absentees</h2></div>
+    <section class="block">
+      <div class="block-head">
+        <h3>Twenty teams that didn't make it</h3>
+        <p class="sub">The highest-ranked nations missing from 2026, by FIFA world ranking. Each carries its
+          squad's market value, a pre-tournament Elo built over 150 years of results, and its World Cup
+          pedigree. <em>Re-sort</em> by ranking, money or Elo.</p>
+      </div>
+      <div class="mo-sort" id="sort">
+        <button data-key="fifa_rank" class="on">By world ranking</button>
+        <button data-key="value_eur">By squad value</button>
+        <button data-key="elo">By Elo</button>
+      </div>
+      <div class="mo-list" id="list"><!-- filled --></div>
+    </section>
+
+    <div class="part"><span class="part-no">Part II</span><h2 class="part-title">Stronger than teams who got in</h2></div>
+    <section class="block">
+      <div class="block-head">
+        <h3>The money that stayed home</h3>
+        <p class="sub">The priciest squads that missed out, set against the most modestly-valued squads that
+          qualified. Qualification is about your confederation and your group — not a global pecking order,
+          so a far more valuable side can be left at home while a cheaper one books its place.</p>
+      </div>
+      <div class="mo-leg"><span><i class="m"></i> missed out</span><span><i class="q"></i> qualified</span></div>
+      <div class="chart-wrap narrow"><div class="mo-cmp" id="cmp"><!-- filled --></div></div>
+      <p class="caption" id="cmp-cap">—</p>
+    </section>
+
+    <section class="findings" id="findings"><!-- filled --></section>
+
+    <footer>
+      <p>World ranking, positions and squad values from
+        <a href="https://www.transfermarkt.com/statistik/weltrangliste" style="color:#443e38">Transfermarkt</a> ·
+        Elo built over the <code>martj42</code> international-results history (snapshot pre-tournament) ·
+        World Cup pedigree hand-checked · assembled in <code>mlfootball/missed.py</code> · no live API.</p>
+    </footer>
+  </main>
+
+  <script src="../js/missed.js"></script>
+</body>
+</html>
