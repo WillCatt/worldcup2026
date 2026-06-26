@@ -308,11 +308,99 @@
     render();
   }
 
+  // ── Part IV: betting "what if?" ───────────────────────────────────────────
+  // Walk a fixed-stake bankroll through every played game for three naive strategies,
+  // priced at the model's own fair odds (1/p), optionally minus a bookmaker margin.
+  // Pure replay of the prediction log — no new data, refreshes with the scorecard.
+  function bettingWhatIf(B) {
+    var log = B.log || [];
+    if (!log.length) { d3.select("#bet-cap").text("No games played yet — nothing to bet on."); return; }
+    var STAKES = [10, 50, 100, 500];
+    var STRATS = [
+      { key: "fav", label: "Favourites", color: AMBER, pick: function (g) { return g.p_home >= g.p_away ? "home" : "away"; }, prob: function (g) { return Math.max(g.p_home, g.p_away); } },
+      { key: "draw", label: "Draws", color: "#b8a892", pick: function () { return "draw"; }, prob: function (g) { return g.p_draw; } },
+      { key: "dog", label: "Underdogs", color: TEAL, pick: function (g) { return g.p_home >= g.p_away ? "away" : "home"; }, prob: function (g) { return Math.min(g.p_home, g.p_away); } }
+    ];
+    var st = { stake: 50, strat: "fav", margin: 0 };
+    var money = function (x) { return Math.round(x).toLocaleString("en-AU"); };
+
+    var sStake = d3.select("#bet-stake");
+    STAKES.forEach(function (v) { sStake.append("button").attr("data-v", v).text("$" + v).on("click", function () { st.stake = v; render(); }); });
+    var sStrat = d3.select("#bet-strat");
+    STRATS.forEach(function (s) { sStrat.append("button").attr("data-k", s.key).text(s.label).on("click", function () { st.strat = s.key; render(); }); });
+    var sMarg = d3.select("#bet-margin");
+    [[0, "Fair odds"], [0.05, "− 5% margin"]].forEach(function (m) { sMarg.append("button").attr("data-m", m[0]).text(m[1]).on("click", function () { st.margin = m[0]; render(); }); });
+
+    function walk(s) {
+      var net = 0, wins = 0, pts = [{ i: 0, net: 0 }];
+      log.forEach(function (g, k) {
+        var p = s.prob(g);
+        if (p && p > 0) {
+          if (g.actual_outcome === s.pick(g)) { net += st.stake * ((1 / p) * (1 - st.margin) - 1); wins++; }
+          else { net -= st.stake; }
+        }
+        pts.push({ i: k + 1, net: net });
+      });
+      return { s: s, pts: pts, net: net, wins: wins, n: log.length, staked: st.stake * log.length };
+    }
+
+    function drawChart(results) {
+      d3.select("#bet-chart").html("");
+      var W = 600, H = 320, mg = { t: 14, r: 56, b: 30, l: 58 };
+      var svg = d3.select("#bet-chart").append("svg").attr("viewBox", "0 0 " + W + " " + H).style("width", "100%").style("max-width", "640px").style("display", "block").style("margin", "0 auto");
+      var n = results[0].pts.length - 1;
+      var x = d3.scaleLinear().domain([0, n]).range([mg.l, W - mg.r]);
+      var all = results.reduce(function (a, r) { return a.concat(r.pts.map(function (p) { return p.net; })); }, []);
+      var lo = Math.min(0, d3.min(all)), hi = Math.max(0, d3.max(all)), pad = (hi - lo) * 0.08 || 1;
+      var y = d3.scaleLinear().domain([lo - pad, hi + pad]).range([H - mg.b, mg.t]);
+      y.ticks(5).forEach(function (t) {
+        svg.append("line").attr("x1", mg.l).attr("x2", W - mg.r).attr("y1", y(t)).attr("y2", y(t)).attr("stroke", t === 0 ? "#cbbfae" : LINE).attr("stroke-dasharray", t === 0 ? "3 3" : null);
+        svg.append("text").attr("x", mg.l - 8).attr("y", y(t) + 3).attr("text-anchor", "end").attr("font-family", "JetBrains Mono").attr("font-size", 9).attr("fill", MUTED).text((t < 0 ? "−$" : "$") + money(Math.abs(t)));
+      });
+      svg.append("text").attr("x", (mg.l + W - mg.r) / 2).attr("y", H - 3).attr("text-anchor", "middle").attr("font-size", 10).attr("fill", MUTED).text("games played →");
+      var line = d3.line().x(function (p) { return x(p.i); }).y(function (p) { return y(p.net); });
+      results.forEach(function (r) {
+        var on = r.s.key === st.strat, last = r.pts[r.pts.length - 1];
+        svg.append("path").attr("d", line(r.pts)).attr("fill", "none").attr("stroke", r.s.color).attr("stroke-width", on ? 2.4 : 1.2).attr("opacity", on ? 1 : 0.3);
+        svg.append("text").attr("x", x(last.i) + 5).attr("y", y(last.net) + 3).attr("font-family", "JetBrains Mono").attr("font-size", on ? 11 : 9.5).attr("font-weight", on ? 600 : 400).attr("fill", r.s.color).attr("opacity", on ? 1 : 0.5).text(r.s.label.slice(0, 3));
+      });
+    }
+
+    function render() {
+      d3.selectAll("#bet-stake button").classed("on", function () { return +this.getAttribute("data-v") === st.stake; });
+      d3.selectAll("#bet-strat button").classed("on", function () { return this.getAttribute("data-k") === st.strat; });
+      d3.selectAll("#bet-margin button").classed("on", function () { return +this.getAttribute("data-m") === st.margin; });
+
+      var results = STRATS.map(walk);
+      var sel = results.find(function (r) { return r.s.key === st.strat; });
+      var roi = sel.staked ? sel.net / sel.staked : 0, up = sel.net >= 0;
+
+      var box = d3.select("#bet-cards"); box.html("");
+      [{ v: sel.wins + "<small>/" + sel.n + "</small>", k: "bets won" },
+       { v: "$" + money(sel.staked), k: "total staked" },
+       { v: (up ? "+$" : "−$") + money(Math.abs(sel.net)), k: "net profit / loss", col: up ? "#1f6d6d" : "#a23c28" },
+       { v: (roi >= 0 ? "+" : "−") + Math.abs(roi * 100).toFixed(0) + "%", k: "return on stake", col: up ? "#1f6d6d" : "#a23c28" }
+      ].forEach(function (c) {
+        var d = box.append("div").attr("class", "fc-sc");
+        var v = d.append("div").attr("class", "v").html(c.v); if (c.col) v.style("color", c.col);
+        d.append("div").attr("class", "k").html(c.k);
+      });
+
+      drawChart(results);
+      d3.select("#bet-cap").html("Each line walks your bankroll through the " + sel.n + " played games in order. Odds are the model's fair price" +
+        (st.margin ? " minus a 5% bookmaker margin" : "") + " — at fair odds a perfectly calibrated model breaks even on average, so distance from zero is the luck of how favourites, draws and underdogs actually fell.");
+      d3.select("#bet-take").html("Backing the <b>" + sel.s.label.toLowerCase() + "</b> at $" + st.stake + " a game would have " +
+        (up ? "returned <b>+$" + money(sel.net) + "</b>" : "cost you <b>−$" + money(Math.abs(sel.net)) + "</b>") +
+        " over " + sel.n + " games — a " + (roi >= 0 ? "+" : "−") + Math.abs(roi * 100).toFixed(0) + "% return on the $" + money(sel.staked) + " staked.");
+    }
+    render();
+  }
+
   function boot() {
     Promise.all([d3.json("../data/forecast.json"), d3.json("../data/simulator.json").catch(function () { return null; })]).then(function (r) {
       var B = r[0], sim = r[1];
       document.querySelectorAll("[data-fc]").forEach(function (e) { if (B.meta[e.getAttribute("data-fc")] != null) e.textContent = B.meta[e.getAttribute("data-fc")]; });
-      fillStats(B); picker(B); scorecard(B); calibration(B); logTable(B); findings(B);
+      fillStats(B); picker(B); scorecard(B); calibration(B); logTable(B); bettingWhatIf(B); findings(B);
       if (sim) simulator(sim); else d3.select("#sim").html("<p style='color:var(--muted)'>Simulator data unavailable.</p>");
     }).catch(function (e) {
       d3.select("#stats").html("<p style='color:var(--muted)'>Couldn't load the forecast bundle.</p>");

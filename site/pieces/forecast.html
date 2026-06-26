@@ -81,6 +81,13 @@
     .sim-delta { font-family: "JetBrains Mono", monospace; font-size: 11.5px; color: var(--muted); margin-top: 8px; text-align: center; min-height: 1.3em; }
     .sim-delta b.up { color: #1f6d6d; } .sim-delta b.dn { color: #a23c28; }
     .sim-reset { font-family: "JetBrains Mono", monospace; font-size: 11.5px; background: none; border: none; color: var(--muted); cursor: pointer; text-decoration: underline; margin-top: 8px; }
+
+    /* betting "what if?" */
+    .bet-controls { display: flex; flex-direction: column; gap: 11px; max-width: 540px; margin: 0 auto 18px; }
+    .bet-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .bet-lbl { font-family: "JetBrains Mono", monospace; font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); width: 88px; flex: none; }
+    #bet-chart svg { overflow: visible; }
+    #bet-cards .v small { font-size: 15px; color: var(--muted); }
   </style>
 </head>
 <body>
@@ -179,6 +186,30 @@
           would defeat the point.</p>
       </div>
       <p class="pen-take">A model is a stack of assumptions. The honest move isn't to hide them — it's to hand you the dials.</p>
+    </section>
+
+    <!-- ════════ PART IV ════════ -->
+    <div class="part"><span class="part-no">Part IV</span><h2 class="part-title">The bettor's question: "What if?"</h2></div>
+    <section class="block">
+      <div class="block-head">
+        <h3>What if you'd bet the same way on every match?</h3>
+        <p class="sub">Pick a stake and a strategy, and walk it through all
+          <span data-fc="n_played">—</span> played group games in order. The odds come from the model's
+          own probabilities (decimal odds = 1 ÷ the model's chance) — we don't have captured bookmaker
+          prices, so this is a clean test of the strategy itself rather than a real-money return. Flip
+          on a bookmaker's margin to see what the house cut does to it.</p>
+      </div>
+      <div class="chart-wrap narrow">
+        <div class="bet-controls">
+          <div class="bet-row"><span class="bet-lbl">Stake / game</span><div class="sim-seg" id="bet-stake"></div></div>
+          <div class="bet-row"><span class="bet-lbl">Bet on</span><div class="sim-seg" id="bet-strat"></div></div>
+          <div class="bet-row"><span class="bet-lbl">Odds</span><div class="sim-seg" id="bet-margin"></div></div>
+        </div>
+        <div class="fc-cards" id="bet-cards"><!-- filled --></div>
+        <div id="bet-chart" style="margin-top:20px" aria-label="Cumulative profit/loss by strategy"></div>
+        <p class="caption" id="bet-cap">—</p>
+      </div>
+      <p class="pen-take" id="bet-take">—</p>
     </section>
 
     <section class="findings" id="findings"><!-- filled --></section>
