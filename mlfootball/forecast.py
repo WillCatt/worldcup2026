@@ -18,6 +18,9 @@ score probabilities. This module wraps it into a forecast you can hold to accoun
 from __future__ import annotations
 
 import json
+import re
+from datetime import datetime, timedelta, timezone
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -92,18 +95,24 @@ def predict(s: ratings.TeamStrengths, fx: dict) -> dict:
     }
 
 
-# ── actual results ──────────────────────────────────────────────────────────────
-def fetch_results() -> dict[frozenset, dict[str, int]]:
-    """{frozenset({home,away}): {team: goals}} for played matches. Empty on any feed error."""
+# ── feed (results + kickoff times) ────────────────────────────────────────────
+@lru_cache(maxsize=1)
+def _feed_matches() -> tuple:
+    """openfootball match list, fetched once. Empty on any feed error (a hiccup must
+    never break the build)."""
     try:
         import urllib.request
         with urllib.request.urlopen(FEED_URL, timeout=30) as r:
-            feed = json.loads(r.read().decode("utf-8"))
-    except Exception as e:  # noqa: BLE001 — a feed hiccup must not break the build
-        print(f"[forecast] feed unavailable ({e}); no results to score yet.")
-        return {}
+            return tuple(json.loads(r.read().decode("utf-8")).get("matches", []))
+    except Exception as e:  # noqa: BLE001
+        print(f"[forecast] feed unavailable ({e}); no results/kickoffs this run.")
+        return ()
+
+
+def fetch_results() -> dict[frozenset, dict[str, int]]:
+    """{frozenset({home,away}): {team: goals}} for played matches."""
     known = {}
-    for m in feed.get("matches", []):
+    for m in _feed_matches():
         s1, s2 = m.get("score1"), m.get("score2")
         if s1 is None or s2 is None:
             ft = (m.get("score") or {}).get("ft")
@@ -115,6 +124,34 @@ def fetch_results() -> dict[frozenset, dict[str, int]]:
         if home and away:
             known[frozenset((home, away))] = {home: int(s1), away: int(s2)}
     return known
+
+
+def _kickoff_utc(date_s: str, time_s: str) -> str | None:
+    """openfootball date + 'HH:MM UTC±H[:MM]' (e.g. '13:00 UTC-6') -> UTC ISO 'Z' string."""
+    if not date_s or not time_s:
+        return None
+    m = re.match(r"\s*(\d{1,2}):(\d{2})\s*UTC\s*([+-]\d{1,2})(?::(\d{2}))?", time_s)
+    if not m:
+        return None
+    sign = -1 if m.group(3)[0] == "-" else 1
+    offset = sign * timedelta(hours=abs(int(m.group(3))), minutes=int(m.group(4) or 0))
+    try:
+        local = datetime.strptime(f"{date_s} {int(m.group(1)):02d}:{m.group(2)}", "%Y-%m-%d %H:%M")
+    except ValueError:
+        return None
+    return (local - offset).replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def fetch_kickoffs() -> dict[frozenset, str]:
+    """{frozenset({home,away}): kickoff UTC ISO} from the feed's date+time fields."""
+    out = {}
+    for m in _feed_matches():
+        home = FEED_ALIASES.get(str(m.get("team1", "")), str(m.get("team1", "")))
+        away = FEED_ALIASES.get(str(m.get("team2", "")), str(m.get("team2", "")))
+        k = _kickoff_utc(str(m.get("date", "")), str(m.get("time", "")))
+        if home and away and k:
+            out[frozenset((home, away))] = k
+    return out
 
 
 def _outcome(gh: int, ga: int) -> str:
@@ -148,7 +185,8 @@ def score(predictions: list[dict], results: dict) -> dict:
         lls_u.append(-np.log(1 / 3))
         for o in OC:
             cal_pred.append(probs[o]); cal_hit.append(1.0 if o == actual else 0.0)
-        log.append({"date": p["date"], "group": p["group"], "home": p["home"], "away": p["away"],
+        log.append({"date": p["date"], "kickoff": p.get("kickoff"), "group": p["group"],
+                    "home": p["home"], "away": p["away"],
                     "p_home": p["p_home"], "p_draw": p["p_draw"], "p_away": p["p_away"],
                     "pred": pred, "likely": p["likely"], "actual": {"h": gh, "a": ga},
                     "actual_outcome": actual, "correct": correct, "exact": bool(exact)})
@@ -180,6 +218,9 @@ def score(predictions: list[dict], results: dict) -> dict:
 def build_export() -> dict:
     s = ratings.fit(data.load(), asof=ASOF)
     fx = fixtures()
+    kicks = fetch_kickoffs()
+    for f in fx:
+        f["kickoff"] = kicks.get(frozenset((f["home"], f["away"])))
     preds = [predict(s, f) for f in fx]
     results = fetch_results()
     sc = score(preds, results)
@@ -238,6 +279,7 @@ def _value_z() -> dict[str, float]:
 def simulator_export(path: Path | None = None) -> dict:
     df = data.load()
     fx = fixtures()
+    kicks = fetch_kickoffs()
     wc_teams = sorted({t for f in fx for t in (f["home"], f["away"])})
     presets = []
     for key, label, xi in DECAY_PRESETS:
@@ -255,7 +297,8 @@ def simulator_export(path: Path | None = None) -> dict:
         "decay_presets": presets,
         "value_z": {t: z for t, z in _value_z().items() if t in wc_teams},
         "hosts": sorted(HOST_COUNTRIES),
-        "fixtures": [{"date": f["date"], "group": f["group"], "home": f["home"],
+        "fixtures": [{"date": f["date"], "kickoff": kicks.get(frozenset((f["home"], f["away"]))),
+                      "group": f["group"], "home": f["home"],
                       "away": f["away"], "country": f["country"]} for f in fx],
     }
     path = path or ROOT / "site" / "data" / "simulator.json"

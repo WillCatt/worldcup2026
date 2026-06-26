@@ -13,6 +13,16 @@
     return i >= n ? HEAT[n] : d3.interpolateRgb(HEAT[i], HEAT[i + 1])(f);
   }
   var OUT = { home: "home win", draw: "draw", away: "away win" };
+  // All match times shown in AEST. Australia/Brisbane is always UTC+10 (no daylight
+  // saving), so it reads as AEST year-round — exactly the label we want.
+  var AEST = "Australia/Brisbane";
+  function _dt(o) { return o.kickoff ? new Date(o.kickoff) : new Date((o.date || o) + "T00:00:00Z"); }
+  function aDate(o, opts) { return _dt(o).toLocaleDateString("en-AU", Object.assign({ timeZone: AEST }, opts)); }
+  function aTime(o) {
+    return o.kickoff ? _dt(o).toLocaleTimeString("en-AU", { timeZone: AEST, hour: "numeric", minute: "2-digit" }).replace(/\s/g, "").toLowerCase() : "";
+  }
+  // "12 Jun 4:00am" for compact pickers/log; weekday+time variant for the card.
+  function whenShort(o) { return aDate(o, { day: "numeric", month: "short" }) + (o.kickoff ? " " + aTime(o) : ""); }
   // chronological fixture order (ISO dates sort lexically); stable tiebreak by group+home
   var byDate = function (a, b) {
     return a.date < b.date ? -1 : a.date > b.date ? 1
@@ -36,8 +46,7 @@
     var fx = B.fixtures.filter(function (f) { return f.known; }).sort(byDate);
     var sel = d3.select("#fc-select"), i = 0;
     fx.forEach(function (f, k) {
-      var date = new Date(f.date + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
-      sel.append("option").attr("value", k).text(date + " · " + f.home + " v " + f.away + "  (Grp " + f.group + ")");
+      sel.append("option").attr("value", k).text(whenShort(f) + " · " + f.home + " v " + f.away + "  (Grp " + f.group + ")");
     });
     // default to the first not-yet-played fixture
     var played = new Set(B.log.map(function (l) { return l.home + "|" + l.away; }));
@@ -53,7 +62,7 @@
   function renderCard(f, B) {
     var box = d3.select("#fc-card"); box.html("");
     var log = B.log.find(function (l) { return l.home === f.home && l.away === f.away; });
-    var date = new Date(f.date + "T00:00:00Z").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "long", timeZone: "UTC" });
+    var date = aDate(f, { weekday: "short", day: "numeric", month: "long" }) + (f.kickoff ? " · " + aTime(f) + " AEST" : "");
     // header
     var mh = box.append("div").attr("class", "fc-mh");
     mh.append("div").attr("class", "tm home").text(f.home);
@@ -179,7 +188,7 @@
   function logTable(B) {
     var tb = d3.select("#fc-logtable tbody");
     B.log.forEach(function (l) {
-      var date = new Date(l.date + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
+      var date = aDate(l, { day: "numeric", month: "short" });
       var probs = pct(l.p_home) + "/" + pct(l.p_draw) + "/" + pct(l.p_away);
       tb.append("tr").html(
         "<td>" + date + "</td><td>" + l.home + " v " + l.away + "</td>" +
@@ -244,8 +253,7 @@
     st.i = Math.max(0, fx.findIndex(function (f) { return f.home === "Spain" || f.away === "Spain"; }));
     var sel = d3.select("#sim-select");
     fx.forEach(function (f, k) {
-      var date = new Date(f.date + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
-      sel.append("option").attr("value", k).text(date + " · " + f.home + " v " + f.away);
+      sel.append("option").attr("value", k).text(whenShort(f) + " · " + f.home + " v " + f.away);
     });
     sel.property("value", st.i).on("change", function () { st.i = +this.value; render(); });
 
