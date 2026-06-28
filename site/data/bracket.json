@@ -1,0 +1,2104 @@
+{
+  "meta": {
+    "asof": "2026-06-10",
+    "n_teams": 32,
+    "n_ties": 32,
+    "n_played": 0,
+    "sims": 40000,
+    "model": "Dixon-Coles bivariate-Poisson, exponential time-decay (frozen pre-tournament)"
+  },
+  "rounds": [
+    {
+      "key": "r32",
+      "name": "Round of 32",
+      "ties": [
+        {
+          "num": 73,
+          "round": "r32",
+          "date": "2026-06-28",
+          "kickoff": "2026-06-28T19:00:00Z",
+          "ground": "Los Angeles (Inglewood)",
+          "country": "United States",
+          "home": "South Africa",
+          "away": "Canada",
+          "home_raw": "South Africa",
+          "away_raw": "Canada",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.1986,
+          "p_draw": 0.3108,
+          "p_away": 0.4906,
+          "exp_home": 0.69,
+          "exp_away": 1.25,
+          "adv_home": 0.354,
+          "adv_away": 0.646,
+          "top_scores": [
+            {
+              "h": 0,
+              "a": 1,
+              "p": 0.1732
+            },
+            {
+              "h": 0,
+              "a": 0,
+              "p": 0.1508
+            },
+            {
+              "h": 1,
+              "a": 1,
+              "p": 0.1306
+            },
+            {
+              "h": 0,
+              "a": 2,
+              "p": 0.1122
+            }
+          ],
+          "grid": [
+            [
+              0.1508,
+              0.1732,
+              0.1122,
+              0.0467,
+              0.0146,
+              0.0036
+            ],
+            [
+              0.0927,
+              0.1306,
+              0.0773,
+              0.0322,
+              0.01,
+              0.0025
+            ],
+            [
+              0.0342,
+              0.0427,
+              0.0266,
+              0.0111,
+              0.0035,
+              0.0009
+            ],
+            [
+              0.0079,
+              0.0098,
+              0.0061,
+              0.0025,
+              0.0008,
+              0.0002
+            ],
+            [
+              0.0014,
+              0.0017,
+              0.0011,
+              0.0004,
+              0.0001,
+              0.0
+            ],
+            [
+              0.0002,
+              0.0002,
+              0.0001,
+              0.0001,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "num": 74,
+          "round": "r32",
+          "date": "2026-06-29",
+          "kickoff": "2026-06-29T20:30:00Z",
+          "ground": "Boston (Foxborough)",
+          "country": "United States",
+          "home": "Germany",
+          "away": "Paraguay",
+          "home_raw": "Germany",
+          "away_raw": "Paraguay",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.5443,
+          "p_draw": 0.2658,
+          "p_away": 0.1899,
+          "exp_home": 1.57,
+          "exp_away": 0.82,
+          "adv_home": 0.6772,
+          "adv_away": 0.3228,
+          "top_scores": [
+            {
+              "h": 1,
+              "a": 0,
+              "p": 0.1367
+            },
+            {
+              "h": 1,
+              "a": 1,
+              "p": 0.1243
+            },
+            {
+              "h": 2,
+              "a": 0,
+              "p": 0.1125
+            },
+            {
+              "h": 0,
+              "a": 0,
+              "p": 0.0973
+            }
+          ],
+          "grid": [
+            [
+              0.0973,
+              0.0686,
+              0.0309,
+              0.0085,
+              0.0018,
+              0.0003
+            ],
+            [
+              0.1367,
+              0.1243,
+              0.0486,
+              0.0134,
+              0.0028,
+              0.0005
+            ],
+            [
+              0.1125,
+              0.0928,
+              0.0383,
+              0.0105,
+              0.0022,
+              0.0004
+            ],
+            [
+              0.059,
+              0.0487,
+              0.0201,
+              0.0055,
+              0.0011,
+              0.0002
+            ],
+            [
+              0.0232,
+              0.0191,
+              0.0079,
+              0.0022,
+              0.0004,
+              0.0001
+            ],
+            [
+              0.0073,
+              0.006,
+              0.0025,
+              0.0007,
+              0.0001,
+              0.0
+            ]
+          ]
+        },
+        {
+          "num": 75,
+          "round": "r32",
+          "date": "2026-06-29",
+          "kickoff": "2026-06-30T01:00:00Z",
+          "ground": "Monterrey (Guadalupe)",
+          "country": "Mexico",
+          "home": "Netherlands",
+          "away": "Morocco",
+          "home_raw": "Netherlands",
+          "away_raw": "Morocco",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.3354,
+          "p_draw": 0.3314,
+          "p_away": 0.3332,
+          "exp_home": 0.96,
+          "exp_away": 0.95,
+          "adv_home": 0.5011,
+          "adv_away": 0.4989,
+          "top_scores": [
+            {
+              "h": 0,
+              "a": 0,
+              "p": 0.1549
+            },
+            {
+              "h": 1,
+              "a": 1,
+              "p": 0.1423
+            },
+            {
+              "h": 1,
+              "a": 0,
+              "p": 0.1342
+            },
+            {
+              "h": 0,
+              "a": 1,
+              "p": 0.1336
+            }
+          ],
+          "grid": [
+            [
+              0.1549,
+              0.1336,
+              0.0673,
+              0.0214,
+              0.0051,
+              0.001
+            ],
+            [
+              0.1342,
+              0.1423,
+              0.0645,
+              0.0205,
+              0.0049,
+              0.0009
+            ],
+            [
+              0.0678,
+              0.0647,
+              0.0309,
+              0.0098,
+              0.0023,
+              0.0004
+            ],
+            [
+              0.0217,
+              0.0207,
+              0.0099,
+              0.0031,
+              0.0007,
+              0.0001
+            ],
+            [
+              0.0052,
+              0.005,
+              0.0024,
+              0.0008,
+              0.0002,
+              0.0
+            ],
+            [
+              0.001,
+              0.001,
+              0.0005,
+              0.0001,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "num": 76,
+          "round": "r32",
+          "date": "2026-06-29",
+          "kickoff": "2026-06-29T17:00:00Z",
+          "ground": "Houston",
+          "country": "United States",
+          "home": "Brazil",
+          "away": "Japan",
+          "home_raw": "Brazil",
+          "away_raw": "Japan",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.4825,
+          "p_draw": 0.2788,
+          "p_away": 0.2387,
+          "exp_home": 1.46,
+          "exp_away": 0.95,
+          "adv_home": 0.6219,
+          "adv_away": 0.3781,
+          "top_scores": [
+            {
+              "h": 1,
+              "a": 1,
+              "p": 0.1314
+            },
+            {
+              "h": 1,
+              "a": 0,
+              "p": 0.1251
+            },
+            {
+              "h": 0,
+              "a": 0,
+              "p": 0.0973
+            },
+            {
+              "h": 2,
+              "a": 0,
+              "p": 0.0959
+            }
+          ],
+          "grid": [
+            [
+              0.0973,
+              0.079,
+              0.0406,
+              0.0128,
+              0.003,
+              0.0006
+            ],
+            [
+              0.1251,
+              0.1314,
+              0.059,
+              0.0186,
+              0.0044,
+              0.0008
+            ],
+            [
+              0.0959,
+              0.0908,
+              0.043,
+              0.0136,
+              0.0032,
+              0.0006
+            ],
+            [
+              0.0465,
+              0.044,
+              0.0208,
+              0.0066,
+              0.0016,
+              0.0003
+            ],
+            [
+              0.0169,
+              0.016,
+              0.0076,
+              0.0024,
+              0.0006,
+              0.0001
+            ],
+            [
+              0.0049,
+              0.0047,
+              0.0022,
+              0.0007,
+              0.0002,
+              0.0
+            ]
+          ]
+        },
+        {
+          "num": 77,
+          "round": "r32",
+          "date": "2026-06-30",
+          "kickoff": "2026-06-30T21:00:00Z",
+          "ground": "New York/New Jersey (East Rutherford)",
+          "country": "",
+          "home": "France",
+          "away": "Sweden",
+          "home_raw": "France",
+          "away_raw": "Sweden",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.6594,
+          "p_draw": 0.2043,
+          "p_away": 0.1364,
+          "exp_home": 2.13,
+          "exp_away": 0.87,
+          "adv_home": 0.7615,
+          "adv_away": 0.2385,
+          "top_scores": [
+            {
+              "h": 2,
+              "a": 0,
+              "p": 0.1132
+            },
+            {
+              "h": 1,
+              "a": 0,
+              "p": 0.1012
+            },
+            {
+              "h": 2,
+              "a": 1,
+              "p": 0.0982
+            },
+            {
+              "h": 1,
+              "a": 1,
+              "p": 0.0971
+            }
+          ],
+          "grid": [
+            [
+              0.0547,
+              0.0382,
+              0.0187,
+              0.0054,
+              0.0012,
+              0.0002
+            ],
+            [
+              0.1012,
+              0.0971,
+              0.04,
+              0.0116,
+              0.0025,
+              0.0004
+            ],
+            [
+              0.1132,
+              0.0982,
+              0.0426,
+              0.0123,
+              0.0027,
+              0.0005
+            ],
+            [
+              0.0805,
+              0.0698,
+              0.0303,
+              0.0088,
+              0.0019,
+              0.0003
+            ],
+            [
+              0.0429,
+              0.0372,
+              0.0161,
+              0.0047,
+              0.001,
+              0.0002
+            ],
+            [
+              0.0183,
+              0.0159,
+              0.0069,
+              0.002,
+              0.0004,
+              0.0001
+            ]
+          ]
+        },
+        {
+          "num": 78,
+          "round": "r32",
+          "date": "2026-06-30",
+          "kickoff": "2026-06-30T17:00:00Z",
+          "ground": "Dallas (Arlington)",
+          "country": "United States",
+          "home": "Ivory Coast",
+          "away": "Norway",
+          "home_raw": "Ivory Coast",
+          "away_raw": "Norway",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.2295,
+          "p_draw": 0.2904,
+          "p_away": 0.4801,
+          "exp_home": 0.86,
+          "exp_away": 1.37,
+          "adv_home": 0.3747,
+          "adv_away": 0.6253,
+          "top_scores": [
+            {
+              "h": 0,
+              "a": 1,
+              "p": 0.1401
+            },
+            {
+              "h": 1,
+              "a": 1,
+              "p": 0.1336
+            },
+            {
+              "h": 0,
+              "a": 0,
+              "p": 0.1141
+            },
+            {
+              "h": 0,
+              "a": 2,
+              "p": 0.1006
+            }
+          ],
+          "grid": [
+            [
+              0.1141,
+              0.1401,
+              0.1006,
+              0.0459,
+              0.0157,
+              0.0043
+            ],
+            [
+              0.0857,
+              0.1336,
+              0.0868,
+              0.0396,
+              0.0136,
+              0.0037
+            ],
+            [
+              0.0399,
+              0.0547,
+              0.0375,
+              0.0171,
+              0.0059,
+              0.0016
+            ],
+            [
+              0.0115,
+              0.0157,
+              0.0108,
+              0.0049,
+              0.0017,
+              0.0005
+            ],
+            [
+              0.0025,
+              0.0034,
+              0.0023,
+              0.0011,
+              0.0004,
+              0.0001
+            ],
+            [
+              0.0004,
+              0.0006,
+              0.0004,
+              0.0002,
+              0.0001,
+              0.0
+            ]
+          ]
+        },
+        {
+          "num": 79,
+          "round": "r32",
+          "date": "2026-06-30",
+          "kickoff": "2026-07-01T01:00:00Z",
+          "ground": "Mexico City",
+          "country": "Mexico",
+          "home": "Mexico",
+          "away": "Ecuador",
+          "home_raw": "Mexico",
+          "away_raw": "Ecuador",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [
+            "Mexico"
+          ],
+          "p_home": 0.2939,
+          "p_draw": 0.3514,
+          "p_away": 0.3547,
+          "exp_home": 0.81,
+          "exp_away": 0.92,
+          "adv_home": 0.4696,
+          "adv_away": 0.5304,
+          "top_scores": [
+            {
+              "h": 0,
+              "a": 0,
+              "p": 0.186
+            },
+            {
+              "h": 0,
+              "a": 1,
+              "p": 0.1566
+            },
+            {
+              "h": 1,
+              "a": 1,
+              "p": 0.139
+            },
+            {
+              "h": 1,
+              "a": 0,
+              "p": 0.1371
+            }
+          ],
+          "grid": [
+            [
+              0.186,
+              0.1566,
+              0.0749,
+              0.0229,
+              0.0052,
+              0.001
+            ],
+            [
+              0.1371,
+              0.139,
+              0.0604,
+              0.0184,
+              0.0042,
+              0.0008
+            ],
+            [
+              0.0581,
+              0.0532,
+              0.0243,
+              0.0074,
+              0.0017,
+              0.0003
+            ],
+            [
+              0.0156,
+              0.0143,
+              0.0065,
+              0.002,
+              0.0005,
+              0.0001
+            ],
+            [
+              0.0031,
+              0.0029,
+              0.0013,
+              0.0004,
+              0.0001,
+              0.0
+            ],
+            [
+              0.0005,
+              0.0005,
+              0.0002,
+              0.0001,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "num": 80,
+          "round": "r32",
+          "date": "2026-07-01",
+          "kickoff": "2026-07-01T16:00:00Z",
+          "ground": "Atlanta",
+          "country": "United States",
+          "home": "England",
+          "away": "DR Congo",
+          "home_raw": "England",
+          "away_raw": "DR Congo",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.6245,
+          "p_draw": 0.2731,
+          "p_away": 0.1025,
+          "exp_home": 1.45,
+          "exp_away": 0.43,
+          "adv_home": 0.761,
+          "adv_away": 0.239,
+          "top_scores": [
+            {
+              "h": 1,
+              "a": 0,
+              "p": 0.2161
+            },
+            {
+              "h": 2,
+              "a": 0,
+              "p": 0.1608
+            },
+            {
+              "h": 0,
+              "a": 0,
+              "p": 0.1572
+            },
+            {
+              "h": 1,
+              "a": 1,
+              "p": 0.1
+            }
+          ],
+          "grid": [
+            [
+              0.1572,
+              0.0602,
+              0.014,
+              0.002,
+              0.0002,
+              0.0
+            ],
+            [
+              0.2161,
+              0.1,
+              0.0204,
+              0.0029,
+              0.0003,
+              0.0
+            ],
+            [
+              0.1608,
+              0.069,
+              0.0148,
+              0.0021,
+              0.0002,
+              0.0
+            ],
+            [
+              0.078,
+              0.0334,
+              0.0072,
+              0.001,
+              0.0001,
+              0.0
+            ],
+            [
+              0.0283,
+              0.0122,
+              0.0026,
+              0.0004,
+              0.0,
+              0.0
+            ],
+            [
+              0.0082,
+              0.0035,
+              0.0008,
+              0.0001,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "num": 81,
+          "round": "r32",
+          "date": "2026-07-01",
+          "kickoff": "2026-07-02T00:00:00Z",
+          "ground": "San Francisco Bay Area (Santa Clara)",
+          "country": "",
+          "home": "United States",
+          "away": "Bosnia and Herzegovina",
+          "home_raw": "USA",
+          "away_raw": "Bosnia & Herzegovina",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.5116,
+          "p_draw": 0.2726,
+          "p_away": 0.2159,
+          "exp_home": 1.52,
+          "exp_away": 0.9,
+          "adv_home": 0.6478,
+          "adv_away": 0.3522,
+          "top_scores": [
+            {
+              "h": 1,
+              "a": 0,
+              "p": 0.1294
+            },
+            {
+              "h": 1,
+              "a": 1,
+              "p": 0.1283
+            },
+            {
+              "h": 2,
+              "a": 0,
+              "p": 0.1031
+            },
+            {
+              "h": 0,
+              "a": 0,
+              "p": 0.0962
+            }
+          ],
+          "grid": [
+            [
+              0.0962,
+              0.0737,
+              0.0359,
+              0.0107,
+              0.0024,
+              0.0004
+            ],
+            [
+              0.1294,
+              0.1283,
+              0.0545,
+              0.0163,
+              0.0036,
+              0.0007
+            ],
+            [
+              0.1031,
+              0.0923,
+              0.0413,
+              0.0123,
+              0.0028,
+              0.0005
+            ],
+            [
+              0.0521,
+              0.0467,
+              0.0209,
+              0.0062,
+              0.0014,
+              0.0002
+            ],
+            [
+              0.0198,
+              0.0177,
+              0.0079,
+              0.0024,
+              0.0005,
+              0.0001
+            ],
+            [
+              0.006,
+              0.0054,
+              0.0024,
+              0.0007,
+              0.0002,
+              0.0
+            ]
+          ]
+        },
+        {
+          "num": 82,
+          "round": "r32",
+          "date": "2026-07-01",
+          "kickoff": "2026-07-01T20:00:00Z",
+          "ground": "Seattle",
+          "country": "United States",
+          "home": "Belgium",
+          "away": "Senegal",
+          "home_raw": "Belgium",
+          "away_raw": "Senegal",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.412,
+          "p_draw": 0.2898,
+          "p_away": 0.2982,
+          "exp_home": 1.31,
+          "exp_away": 1.07,
+          "adv_home": 0.5569,
+          "adv_away": 0.4431,
+          "top_scores": [
+            {
+              "h": 1,
+              "a": 1,
+              "p": 0.1368
+            },
+            {
+              "h": 1,
+              "a": 0,
+              "p": 0.1143
+            },
+            {
+              "h": 0,
+              "a": 0,
+              "p": 0.0999
+            },
+            {
+              "h": 0,
+              "a": 1,
+              "p": 0.0925
+            }
+          ],
+          "grid": [
+            [
+              0.0999,
+              0.0925,
+              0.0533,
+              0.019,
+              0.0051,
+              0.0011
+            ],
+            [
+              0.1143,
+              0.1368,
+              0.0695,
+              0.0248,
+              0.0066,
+              0.0014
+            ],
+            [
+              0.0791,
+              0.0847,
+              0.0454,
+              0.0162,
+              0.0043,
+              0.0009
+            ],
+            [
+              0.0344,
+              0.0369,
+              0.0197,
+              0.007,
+              0.0019,
+              0.0004
+            ],
+            [
+              0.0112,
+              0.012,
+              0.0064,
+              0.0023,
+              0.0006,
+              0.0001
+            ],
+            [
+              0.0029,
+              0.0031,
+              0.0017,
+              0.0006,
+              0.0002,
+              0.0
+            ]
+          ]
+        },
+        {
+          "num": 83,
+          "round": "r32",
+          "date": "2026-07-02",
+          "kickoff": "2026-07-02T23:00:00Z",
+          "ground": "Toronto",
+          "country": "Canada",
+          "home": "Portugal",
+          "away": "Croatia",
+          "home_raw": "Portugal",
+          "away_raw": "Croatia",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.4792,
+          "p_draw": 0.2754,
+          "p_away": 0.2455,
+          "exp_home": 1.48,
+          "exp_away": 0.99,
+          "adv_home": 0.6169,
+          "adv_away": 0.3831,
+          "top_scores": [
+            {
+              "h": 1,
+              "a": 1,
+              "p": 0.1306
+            },
+            {
+              "h": 1,
+              "a": 0,
+              "p": 0.1188
+            },
+            {
+              "h": 2,
+              "a": 0,
+              "p": 0.0929
+            },
+            {
+              "h": 2,
+              "a": 1,
+              "p": 0.0917
+            }
+          ],
+          "grid": [
+            [
+              0.0914,
+              0.0771,
+              0.0413,
+              0.0136,
+              0.0034,
+              0.0007
+            ],
+            [
+              0.1188,
+              0.1306,
+              0.0612,
+              0.0201,
+              0.005,
+              0.001
+            ],
+            [
+              0.0929,
+              0.0917,
+              0.0453,
+              0.0149,
+              0.0037,
+              0.0007
+            ],
+            [
+              0.0458,
+              0.0453,
+              0.0223,
+              0.0074,
+              0.0018,
+              0.0004
+            ],
+            [
+              0.017,
+              0.0167,
+              0.0083,
+              0.0027,
+              0.0007,
+              0.0001
+            ],
+            [
+              0.005,
+              0.005,
+              0.0024,
+              0.0008,
+              0.0002,
+              0.0
+            ]
+          ]
+        },
+        {
+          "num": 84,
+          "round": "r32",
+          "date": "2026-07-02",
+          "kickoff": "2026-07-02T19:00:00Z",
+          "ground": "Los Angeles (Inglewood)",
+          "country": "United States",
+          "home": "Spain",
+          "away": "Austria",
+          "home_raw": "Spain",
+          "away_raw": "Austria",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.6048,
+          "p_draw": 0.2424,
+          "p_away": 0.1528,
+          "exp_home": 1.75,
+          "exp_away": 0.76,
+          "adv_home": 0.726,
+          "adv_away": 0.274,
+          "top_scores": [
+            {
+              "h": 1,
+              "a": 0,
+              "p": 0.1362
+            },
+            {
+              "h": 2,
+              "a": 0,
+              "p": 0.1244
+            },
+            {
+              "h": 1,
+              "a": 1,
+              "p": 0.1138
+            },
+            {
+              "h": 2,
+              "a": 1,
+              "p": 0.0946
+            }
+          ],
+          "grid": [
+            [
+              0.0868,
+              0.0558,
+              0.0234,
+              0.0059,
+              0.0011,
+              0.0002
+            ],
+            [
+              0.1362,
+              0.1138,
+              0.0411,
+              0.0104,
+              0.002,
+              0.0003
+            ],
+            [
+              0.1244,
+              0.0946,
+              0.036,
+              0.0091,
+              0.0017,
+              0.0003
+            ],
+            [
+              0.0727,
+              0.0553,
+              0.021,
+              0.0053,
+              0.001,
+              0.0002
+            ],
+            [
+              0.0318,
+              0.0242,
+              0.0092,
+              0.0023,
+              0.0004,
+              0.0001
+            ],
+            [
+              0.0112,
+              0.0085,
+              0.0032,
+              0.0008,
+              0.0002,
+              0.0
+            ]
+          ]
+        },
+        {
+          "num": 85,
+          "round": "r32",
+          "date": "2026-07-02",
+          "kickoff": "2026-07-03T03:00:00Z",
+          "ground": "Vancouver",
+          "country": "Canada",
+          "home": "Switzerland",
+          "away": "Algeria",
+          "home_raw": "Switzerland",
+          "away_raw": "Algeria",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.4419,
+          "p_draw": 0.2688,
+          "p_away": 0.2893,
+          "exp_home": 1.5,
+          "exp_away": 1.17,
+          "adv_home": 0.5763,
+          "adv_away": 0.4237,
+          "top_scores": [
+            {
+              "h": 1,
+              "a": 1,
+              "p": 0.1281
+            },
+            {
+              "h": 1,
+              "a": 0,
+              "p": 0.0974
+            },
+            {
+              "h": 2,
+              "a": 1,
+              "p": 0.0912
+            },
+            {
+              "h": 2,
+              "a": 0,
+              "p": 0.078
+            }
+          ],
+          "grid": [
+            [
+              0.0758,
+              0.0745,
+              0.0474,
+              0.0185,
+              0.0054,
+              0.0013
+            ],
+            [
+              0.0974,
+              0.1281,
+              0.0711,
+              0.0277,
+              0.0081,
+              0.0019
+            ],
+            [
+              0.078,
+              0.0912,
+              0.0533,
+              0.0208,
+              0.0061,
+              0.0014
+            ],
+            [
+              0.039,
+              0.0456,
+              0.0267,
+              0.0104,
+              0.003,
+              0.0007
+            ],
+            [
+              0.0146,
+              0.0171,
+              0.01,
+              0.0039,
+              0.0011,
+              0.0003
+            ],
+            [
+              0.0044,
+              0.0051,
+              0.003,
+              0.0012,
+              0.0003,
+              0.0001
+            ]
+          ]
+        },
+        {
+          "num": 86,
+          "round": "r32",
+          "date": "2026-07-03",
+          "kickoff": "2026-07-03T22:00:00Z",
+          "ground": "Miami (Miami Gardens)",
+          "country": "United States",
+          "home": "Argentina",
+          "away": "Cape Verde",
+          "home_raw": "Argentina",
+          "away_raw": "Cape Verde",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.8095,
+          "p_draw": 0.1505,
+          "p_away": 0.04,
+          "exp_home": 2.25,
+          "exp_away": 0.34,
+          "adv_home": 0.8848,
+          "adv_away": 0.1152,
+          "top_scores": [
+            {
+              "h": 2,
+              "a": 0,
+              "p": 0.1893
+            },
+            {
+              "h": 1,
+              "a": 0,
+              "p": 0.1649
+            },
+            {
+              "h": 3,
+              "a": 0,
+              "p": 0.1422
+            },
+            {
+              "h": 4,
+              "a": 0,
+              "p": 0.0801
+            }
+          ],
+          "grid": [
+            [
+              0.0776,
+              0.0225,
+              0.0044,
+              0.0005,
+              0.0,
+              0.0
+            ],
+            [
+              0.1649,
+              0.0607,
+              0.0099,
+              0.0011,
+              0.0001,
+              0.0
+            ],
+            [
+              0.1893,
+              0.0649,
+              0.0111,
+              0.0013,
+              0.0001,
+              0.0
+            ],
+            [
+              0.1422,
+              0.0488,
+              0.0084,
+              0.001,
+              0.0001,
+              0.0
+            ],
+            [
+              0.0801,
+              0.0275,
+              0.0047,
+              0.0005,
+              0.0,
+              0.0
+            ],
+            [
+              0.0361,
+              0.0124,
+              0.0021,
+              0.0002,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "num": 87,
+          "round": "r32",
+          "date": "2026-07-03",
+          "kickoff": "2026-07-04T01:30:00Z",
+          "ground": "Kansas City",
+          "country": "United States",
+          "home": "Colombia",
+          "away": "Ghana",
+          "home_raw": "Colombia",
+          "away_raw": "Ghana",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.7576,
+          "p_draw": 0.1687,
+          "p_away": 0.0737,
+          "exp_home": 2.3,
+          "exp_away": 0.58,
+          "adv_home": 0.8419,
+          "adv_away": 0.1581,
+          "top_scores": [
+            {
+              "h": 2,
+              "a": 0,
+              "p": 0.1481
+            },
+            {
+              "h": 1,
+              "a": 0,
+              "p": 0.1249
+            },
+            {
+              "h": 3,
+              "a": 0,
+              "p": 0.1133
+            },
+            {
+              "h": 2,
+              "a": 1,
+              "p": 0.0864
+            }
+          ],
+          "grid": [
+            [
+              0.0602,
+              0.0287,
+              0.0096,
+              0.0019,
+              0.0003,
+              0.0
+            ],
+            [
+              0.1249,
+              0.0793,
+              0.0219,
+              0.0043,
+              0.0006,
+              0.0001
+            ],
+            [
+              0.1481,
+              0.0864,
+              0.0252,
+              0.0049,
+              0.0007,
+              0.0001
+            ],
+            [
+              0.1133,
+              0.0661,
+              0.0193,
+              0.0037,
+              0.0005,
+              0.0001
+            ],
+            [
+              0.0651,
+              0.038,
+              0.0111,
+              0.0022,
+              0.0003,
+              0.0
+            ],
+            [
+              0.0299,
+              0.0174,
+              0.0051,
+              0.001,
+              0.0001,
+              0.0
+            ]
+          ]
+        },
+        {
+          "num": 88,
+          "round": "r32",
+          "date": "2026-07-03",
+          "kickoff": "2026-07-03T18:00:00Z",
+          "ground": "Dallas (Arlington)",
+          "country": "United States",
+          "home": "Australia",
+          "away": "Egypt",
+          "home_raw": "Australia",
+          "away_raw": "Egypt",
+          "known": true,
+          "played": false,
+          "score": null,
+          "winner": null,
+          "host_edge": [],
+          "p_home": 0.3521,
+          "p_draw": 0.3531,
+          "p_away": 0.2948,
+          "exp_home": 0.91,
+          "exp_away": 0.8,
+          "adv_home": 0.5286,
+          "adv_away": 0.4714,
+          "top_scores": [
+            {
+              "h": 0,
+              "a": 0,
+              "p": 0.1884
+            },
+            {
+              "h": 1,
+              "a": 0,
+              "p": 0.157
+            },
+            {
+              "h": 1,
+              "a": 1,
+              "p": 0.1388
+            },
+            {
+              "h": 0,
+              "a": 1,
+              "p": 0.1384
+            }
+          ],
+          "grid": [
+            [
+              0.1884,
+              0.1384,
+              0.0584,
+              0.0156,
+              0.0031,
+              0.0005
+            ],
+            [
+              0.157,
+              0.1388,
+              0.0528,
+              0.0141,
+              0.0028,
+              0.0005
+            ],
+            [
+              0.0743,
+              0.0596,
+              0.0239,
+              0.0064,
+              0.0013,
+              0.0002
+            ],
+            [
+              0.0224,
+              0.018,
+              0.0072,
+              0.0019,
+              0.0004,
+              0.0001
+            ],
+            [
+              0.0051,
+              0.0041,
+              0.0016,
+              0.0004,
+              0.0001,
+              0.0
+            ],
+            [
+              0.0009,
+              0.0007,
+              0.0003,
+              0.0001,
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "key": "r16",
+      "name": "Round of 16",
+      "ties": [
+        {
+          "num": 89,
+          "round": "r16",
+          "date": "2026-07-04",
+          "kickoff": "2026-07-04T21:00:00Z",
+          "ground": "Philadelphia",
+          "country": "United States",
+          "home": null,
+          "away": null,
+          "home_raw": "W74",
+          "away_raw": "W77",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        },
+        {
+          "num": 90,
+          "round": "r16",
+          "date": "2026-07-04",
+          "kickoff": "2026-07-04T17:00:00Z",
+          "ground": "Houston",
+          "country": "United States",
+          "home": null,
+          "away": null,
+          "home_raw": "W73",
+          "away_raw": "W75",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        },
+        {
+          "num": 91,
+          "round": "r16",
+          "date": "2026-07-05",
+          "kickoff": "2026-07-05T20:00:00Z",
+          "ground": "New York/New Jersey (East Rutherford)",
+          "country": "",
+          "home": null,
+          "away": null,
+          "home_raw": "W76",
+          "away_raw": "W78",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        },
+        {
+          "num": 92,
+          "round": "r16",
+          "date": "2026-07-05",
+          "kickoff": "2026-07-06T00:00:00Z",
+          "ground": "Mexico City",
+          "country": "Mexico",
+          "home": null,
+          "away": null,
+          "home_raw": "W79",
+          "away_raw": "W80",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        },
+        {
+          "num": 93,
+          "round": "r16",
+          "date": "2026-07-06",
+          "kickoff": "2026-07-06T19:00:00Z",
+          "ground": "Dallas (Arlington)",
+          "country": "United States",
+          "home": null,
+          "away": null,
+          "home_raw": "W83",
+          "away_raw": "W84",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        },
+        {
+          "num": 94,
+          "round": "r16",
+          "date": "2026-07-06",
+          "kickoff": "2026-07-07T00:00:00Z",
+          "ground": "Seattle",
+          "country": "United States",
+          "home": null,
+          "away": null,
+          "home_raw": "W81",
+          "away_raw": "W82",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        },
+        {
+          "num": 95,
+          "round": "r16",
+          "date": "2026-07-07",
+          "kickoff": "2026-07-07T16:00:00Z",
+          "ground": "Atlanta",
+          "country": "United States",
+          "home": null,
+          "away": null,
+          "home_raw": "W86",
+          "away_raw": "W88",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        },
+        {
+          "num": 96,
+          "round": "r16",
+          "date": "2026-07-07",
+          "kickoff": "2026-07-07T20:00:00Z",
+          "ground": "Vancouver",
+          "country": "Canada",
+          "home": null,
+          "away": null,
+          "home_raw": "W85",
+          "away_raw": "W87",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        }
+      ]
+    },
+    {
+      "key": "qf",
+      "name": "Quarter-finals",
+      "ties": [
+        {
+          "num": 97,
+          "round": "qf",
+          "date": "2026-07-09",
+          "kickoff": "2026-07-09T20:00:00Z",
+          "ground": "Boston (Foxborough)",
+          "country": "United States",
+          "home": null,
+          "away": null,
+          "home_raw": "W89",
+          "away_raw": "W90",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        },
+        {
+          "num": 98,
+          "round": "qf",
+          "date": "2026-07-10",
+          "kickoff": "2026-07-10T19:00:00Z",
+          "ground": "Los Angeles (Inglewood)",
+          "country": "United States",
+          "home": null,
+          "away": null,
+          "home_raw": "W93",
+          "away_raw": "W94",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        },
+        {
+          "num": 99,
+          "round": "qf",
+          "date": "2026-07-11",
+          "kickoff": "2026-07-11T21:00:00Z",
+          "ground": "Miami (Miami Gardens)",
+          "country": "United States",
+          "home": null,
+          "away": null,
+          "home_raw": "W91",
+          "away_raw": "W92",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        },
+        {
+          "num": 100,
+          "round": "qf",
+          "date": "2026-07-11",
+          "kickoff": "2026-07-12T01:00:00Z",
+          "ground": "Kansas City",
+          "country": "United States",
+          "home": null,
+          "away": null,
+          "home_raw": "W95",
+          "away_raw": "W96",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        }
+      ]
+    },
+    {
+      "key": "sf",
+      "name": "Semi-finals",
+      "ties": [
+        {
+          "num": 101,
+          "round": "sf",
+          "date": "2026-07-14",
+          "kickoff": "2026-07-14T19:00:00Z",
+          "ground": "Dallas (Arlington)",
+          "country": "United States",
+          "home": null,
+          "away": null,
+          "home_raw": "W97",
+          "away_raw": "W98",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        },
+        {
+          "num": 102,
+          "round": "sf",
+          "date": "2026-07-15",
+          "kickoff": "2026-07-15T19:00:00Z",
+          "ground": "Atlanta",
+          "country": "United States",
+          "home": null,
+          "away": null,
+          "home_raw": "W99",
+          "away_raw": "W100",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        }
+      ]
+    },
+    {
+      "key": "final",
+      "name": "Final",
+      "ties": [
+        {
+          "num": 104,
+          "round": "final",
+          "date": "2026-07-19",
+          "kickoff": "2026-07-19T19:00:00Z",
+          "ground": "New York/New Jersey (East Rutherford)",
+          "country": "",
+          "home": null,
+          "away": null,
+          "home_raw": "W101",
+          "away_raw": "W102",
+          "known": false,
+          "played": false,
+          "score": null,
+          "winner": null
+        }
+      ]
+    }
+  ],
+  "third": {
+    "num": 103,
+    "round": "third",
+    "date": "2026-07-18",
+    "kickoff": "2026-07-18T21:00:00Z",
+    "ground": "Miami (Miami Gardens)",
+    "country": "United States",
+    "home": null,
+    "away": null,
+    "home_raw": "L101",
+    "away_raw": "L102",
+    "known": false,
+    "played": false,
+    "score": null,
+    "winner": null
+  },
+  "tournament": [
+    {
+      "team": "Argentina",
+      "r16": 0.883,
+      "qf": 0.6816,
+      "sf": 0.4668,
+      "final": 0.2971,
+      "champ": 0.1878
+    },
+    {
+      "team": "Spain",
+      "r16": 0.7261,
+      "qf": 0.4591,
+      "sf": 0.343,
+      "final": 0.2248,
+      "champ": 0.1336
+    },
+    {
+      "team": "England",
+      "r16": 0.7643,
+      "qf": 0.4821,
+      "sf": 0.2772,
+      "final": 0.1471,
+      "champ": 0.0811
+    },
+    {
+      "team": "France",
+      "r16": 0.7628,
+      "qf": 0.4738,
+      "sf": 0.2878,
+      "final": 0.155,
+      "champ": 0.0794
+    },
+    {
+      "team": "Brazil",
+      "r16": 0.6234,
+      "qf": 0.4336,
+      "sf": 0.2592,
+      "final": 0.1416,
+      "champ": 0.0786
+    },
+    {
+      "team": "Colombia",
+      "r16": 0.8444,
+      "qf": 0.5304,
+      "sf": 0.2525,
+      "final": 0.1306,
+      "champ": 0.0648
+    },
+    {
+      "team": "Portugal",
+      "r16": 0.616,
+      "qf": 0.2919,
+      "sf": 0.1916,
+      "final": 0.1086,
+      "champ": 0.0549
+    },
+    {
+      "team": "Netherlands",
+      "r16": 0.5021,
+      "qf": 0.3698,
+      "sf": 0.192,
+      "final": 0.0948,
+      "champ": 0.0426
+    },
+    {
+      "team": "Morocco",
+      "r16": 0.4979,
+      "qf": 0.3463,
+      "sf": 0.1787,
+      "final": 0.0874,
+      "champ": 0.0419
+    },
+    {
+      "team": "Germany",
+      "r16": 0.6758,
+      "qf": 0.3324,
+      "sf": 0.1833,
+      "final": 0.0865,
+      "champ": 0.0383
+    },
+    {
+      "team": "Belgium",
+      "r16": 0.5568,
+      "qf": 0.3867,
+      "sf": 0.1508,
+      "final": 0.071,
+      "champ": 0.029
+    },
+    {
+      "team": "Japan",
+      "r16": 0.3766,
+      "qf": 0.2131,
+      "sf": 0.1042,
+      "final": 0.0456,
+      "champ": 0.0209
+    },
+    {
+      "team": "Ecuador",
+      "r16": 0.5308,
+      "qf": 0.243,
+      "sf": 0.1115,
+      "final": 0.0464,
+      "champ": 0.0202
+    },
+    {
+      "team": "Switzerland",
+      "r16": 0.576,
+      "qf": 0.2667,
+      "sf": 0.1076,
+      "final": 0.0463,
+      "champ": 0.0201
+    },
+    {
+      "team": "Norway",
+      "r16": 0.6239,
+      "qf": 0.2439,
+      "sf": 0.1158,
+      "final": 0.0459,
+      "champ": 0.0196
+    },
+    {
+      "team": "Senegal",
+      "r16": 0.4432,
+      "qf": 0.2797,
+      "sf": 0.1014,
+      "final": 0.0427,
+      "champ": 0.0158
+    },
+    {
+      "team": "Croatia",
+      "r16": 0.384,
+      "qf": 0.1389,
+      "sf": 0.0752,
+      "final": 0.0328,
+      "champ": 0.013
+    },
+    {
+      "team": "Austria",
+      "r16": 0.2739,
+      "qf": 0.1101,
+      "sf": 0.057,
+      "final": 0.0232,
+      "champ": 0.0089
+    },
+    {
+      "team": "Mexico",
+      "r16": 0.4693,
+      "qf": 0.1931,
+      "sf": 0.0695,
+      "final": 0.023,
+      "champ": 0.007
+    },
+    {
+      "team": "Algeria",
+      "r16": 0.424,
+      "qf": 0.1638,
+      "sf": 0.0563,
+      "final": 0.0206,
+      "champ": 0.007
+    },
+    {
+      "team": "Canada",
+      "r16": 0.6478,
+      "qf": 0.2137,
+      "sf": 0.0722,
+      "final": 0.0222,
+      "champ": 0.006
+    },
+    {
+      "team": "Australia",
+      "r16": 0.5292,
+      "qf": 0.1513,
+      "sf": 0.0563,
+      "final": 0.0195,
+      "champ": 0.006
+    },
+    {
+      "team": "United States",
+      "r16": 0.6483,
+      "qf": 0.2584,
+      "sf": 0.0705,
+      "final": 0.0247,
+      "champ": 0.0059
+    },
+    {
+      "team": "Egypt",
+      "r16": 0.4708,
+      "qf": 0.128,
+      "sf": 0.0442,
+      "final": 0.0154,
+      "champ": 0.0041
+    },
+    {
+      "team": "Ivory Coast",
+      "r16": 0.3761,
+      "qf": 0.1093,
+      "sf": 0.0404,
+      "final": 0.0122,
+      "champ": 0.004
+    },
+    {
+      "team": "Paraguay",
+      "r16": 0.3242,
+      "qf": 0.109,
+      "sf": 0.0421,
+      "final": 0.0131,
+      "champ": 0.0036
+    },
+    {
+      "team": "Sweden",
+      "r16": 0.2372,
+      "qf": 0.0848,
+      "sf": 0.0302,
+      "final": 0.0084,
+      "champ": 0.0024
+    },
+    {
+      "team": "DR Congo",
+      "r16": 0.2357,
+      "qf": 0.0817,
+      "sf": 0.022,
+      "final": 0.0056,
+      "champ": 0.0017
+    },
+    {
+      "team": "South Africa",
+      "r16": 0.3522,
+      "qf": 0.0703,
+      "sf": 0.0138,
+      "final": 0.0027,
+      "champ": 0.0006
+    },
+    {
+      "team": "Bosnia and Herzegovina",
+      "r16": 0.3517,
+      "qf": 0.0752,
+      "sf": 0.0106,
+      "final": 0.0021,
+      "champ": 0.0003
+    },
+    {
+      "team": "Cape Verde",
+      "r16": 0.117,
+      "qf": 0.0391,
+      "sf": 0.0087,
+      "final": 0.0018,
+      "champ": 0.0003
+    },
+    {
+      "team": "Ghana",
+      "r16": 0.1556,
+      "qf": 0.039,
+      "sf": 0.0076,
+      "final": 0.0014,
+      "champ": 0.0002
+    }
+  ],
+  "sources": [
+    {
+      "label": "Match history — martj42 international results",
+      "url": "https://github.com/martj42/international_results"
+    },
+    {
+      "label": "Knockout draw + results — openfootball/worldcup.json",
+      "url": "https://github.com/openfootball/worldcup.json"
+    }
+  ]
+}
